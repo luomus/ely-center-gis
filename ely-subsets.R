@@ -127,6 +127,6 @@ tryCatch(
   }
 
 ) |>
-cat(file = "success.txt")
+cat(file = "subsets-success.txt")
 
-cat(format(Sys.time(), usetz = TRUE), file = "last-update.txt")
+cat(format(Sys.time(), usetz = TRUE), file = "subsets-last-update.txt")
