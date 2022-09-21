@@ -1,0 +1,6 @@
+source("setup.R")
+source("db-setup.R")
+source("query.R")
+source("transform-footprints.R")
+source("ely-subsets.R")
+source("ely-compute.R")
