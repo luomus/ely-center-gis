@@ -2,11 +2,11 @@ tryCatch(
 
   {
 
-    timeout_in_secs <- Sys.getenv("TIMEOUT_IN_HRS") * 60 * 60
+    timeout_in_secs <- as.integer(Sys.getenv("TIMEOUT_IN_HOURS")) * 60L * 60L
 
     start_timer <- tictoc::tic()
 
-    n_subsets <- Sys.getenv("N_SUBSETS")
+    n_subsets <- as.integer(Sys.getenv("N_SUBSETS"))
 
     mod_time_subsets <- dplyr::tbl(
       con, DBI::Id(schema = "subsets", table = "mod_time")
