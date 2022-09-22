@@ -1,0 +1,254 @@
+kind: Template
+apiVersion: v1
+parameters:
+  - name: APP
+    required: true
+    value: ely-center-gis
+  - name: BRANCH
+    required: true
+  - name: GIT_HOST
+    required: true
+    value: https://github.com
+  - name: ORG
+    required: true
+    value: luomus
+  - name: TAG
+    required: true
+    value: latest
+  - name: DB
+    required: true
+    value: postgis
+  - name: DB_NAME
+    required: true
+    value: ely
+  - name: DB_IMAGE
+    required: true
+    value: docker.io/crunchydata/crunchy-postgres-gis:centos8-13.6-3.1-4.7.5
+  - name: DB_PORT
+    required: true
+    value: "5432"
+  - name: DB_DIR
+    required: true
+    value: /pgdata
+  - name: DB_RUN
+    required: true
+    value: postgres
+  - name: DB_MODE
+    required: true
+    value: primary
+  - name: DB_USER
+    required: true
+  - name: DB_PRIMARY_USER
+    required: true
+  - name: DB_USER_PASSWORD
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{20}"
+  - name: DB_PRIMARY_PASSWORD
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{20}"
+  - name: DB_ROOT_PASSWORD
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{20}"
+  - name: STORAGE
+    required: true
+    value: "40Gi"
+  - name: HOST
+    required: true
+  - name: CRON
+    required: true
+    value: job
+  - name: CRON_SCHEDULE
+    required: true
+    value: "0 20 * * *"
+  - name: CRON_CMD
+    required: true
+    value: '["Rscript", "--vanilla", "ely.R"]'
+  - name: CRON_LIMIT
+    required: true
+    value: "7"
+  - name: CRON_CONCURRENCY
+    required: true
+    value: "Forbid"
+  - name: FINBIF_ACCESS_TOKEN
+    required: true
+  - name: FINBIF_API_URL
+    required: true
+  - name: FINBIF_EMAIL
+    required: true
+  - name: FINBIF_WAREHOUSE
+    required: true
+  - name: TIMEOUT_IN_HOURS
+    required: true
+    value: "8"
+  - name: N_SUBSETS
+    required: true
+  - name: GITHUB_SECRET
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{20}"
+metadata:
+  name: ${APP}
+objects:
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APP}-${BRANCH}:${TAG}
+    source:
+      type: Git
+      git:
+        uri: ${GIT_HOST}/${ORG}/${APP}.git
+        ref: ${BRANCH}
+    strategy:
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - type: GitHub
+      github:
+        secret: ${GITHUB_SECRET}
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    lookupPolicy:
+      local: true
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${DB}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APP}
+      deploymentconfig: ${DB}-${BRANCH}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: ${APP}
+          deploymentconfig: ${DB}-${BRANCH}
+      spec:
+        containers:
+        - image: ${DB_IMAGE}
+          name: ${DB}-${BRANCH}
+          volumeMounts:
+          - mountPath: ${DB_DIR}
+            name: ${DB}-${BRANCH}
+          ports:
+            - containerPort: ${DB_PORT}
+          env:
+          - name: MODE
+            value: ${DB_RUN}
+          - name: PG_MODE
+            value: ${DB_MODE}
+          - name: PG_PRIMARY_PORT
+            value: ${DB_PORT}
+          - name: PG_DATABASE
+            value: ${DB_NAME}
+          - name: PG_USER
+            value: ${DB_USER}
+          - name: PG_PRIMARY_USER
+            value: ${DB_PRIMARY_USER}
+          - name: PG_PASSWORD
+            value: ${DB_USER_PASSWORD}
+          - name: PG_PRIMARY_PASSWORD
+            value: ${DB_PRIMARY_PASSWORD}
+          - name: PG_ROOT_PASSWORD
+            value: ${DB_ROOT_PASSWORD}
+        volumes:
+        - name: ${DB}-${BRANCH}
+          persistentVolumeClaim:
+            claimName: ${DB}-${BRANCH}
+    triggers:
+    - type: ConfigChange
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${DB}-${BRANCH}
+  spec:
+    storageClassName: ${STORAGE_CLASS}
+    accessModes:
+    - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${STORAGE}
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${DB}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    ports:
+    - name: ${DB_PORT}
+      port: ${DB_PORT}
+      targetPort: ${{DB_PORT}}
+    selector:
+      app: ${APP}
+      deploymentconfig: ${DB}-${BRANCH}
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${DB}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    host: ${APP}-${BRANCH}.${HOST}
+    port:
+      targetPort: ${DB_PORT}-tcp
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${DB}-${BRANCH}
+    wildcardPolicy: None
+- kind: CronJob
+  apiVersion: batch/v1beta1
+  metadata:
+    name: ${APP}-${BRANCH}
+  spec:
+    schedule: ${CRON_SCHEDULE}
+    concurrencyPolicy: ${CRON_CONCURRENCY}
+    successfulJobsHistoryLimit: ${{CRON_LIMIT}}
+    failedJobsHistoryLimit: ${{CRON_LIMIT}}
+    jobTemplate:
+      spec:
+        template:
+          metadata:
+            labels:
+              app: ${APP}
+          spec:
+            containers:
+            - name: ${APP}-${BRANCH}-${CRON}
+              image: ${APP}-${BRANCH}:${TAG}
+              command: ${{CRON_CMD}}
+              env:
+              - name: FINBIF_ACCESS_TOKEN
+                value: ${FINBIF_ACCESS_TOKEN}
+              - name: FINBIF_API_URL
+                value: ${FINBIF_API_URL}
+              - name: FINBIF_EMAIL
+                value: ${FINBIF_EMAIL}
+              - name: FINBIF_WAREHOUSE
+                value: ${FINBIF_WAREHOUSE}
+              - name: TIMEOUT_IN_HOURS
+                value: ${TIMEOUT_IN_HOURS}
+              - name: N_SUBSETS
+                value: ${N_SUBSETS}
+            restartPolicy: Never
