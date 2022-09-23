@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -a
+
+source ./$2
+
+set +a
+
+BRANCH=$(git symbolic-ref --short -q HEAD)
+
+if [ "$BRANCH" != "main" ]; then
+
+FINBIF_ACCESS_TOKEN=$FINBIF_DEV_ACCESS_TOKEN
+FINBIF_API_URL=$FINBIF_DEV_API_URL
+
+fi
+
+oc process -f $1 \
+  -p BRANCH=$BRANCH \
+  -p DB_PORT=$DB_PORT \
+  -p DB_NAME=$DB_NAME \
+  -p DB_USER=$DB_USER \
+  -p DB_PRIMARY_USER=$DB_PRIMARY_USER \
+  -p DB_SUPER_USER=$DB_SUPER_USER \
+  -p HOST=$HOST \
+  -p FINBIF_ACCESS_TOKEN=$FINBIF_ACCESS_TOKEN \
+  -p FINBIF_API_URL=$FINBIF_API_URL \
+  -p FINBIF_EMAIL=$FINBIF_EMAIL \
+  -p FINBIF_WAREHOUSE=$FINBIF_WAREHOUSE \
+  -p N_SUBSETS=$N_SUBSETS
