@@ -55,6 +55,9 @@ parameters:
   - name: STORAGE
     required: true
     value: "40Gi"
+  - name: STORAGE_CLASS
+    required: true
+    value: "standard-rwo"
   - name: HOST
     required: true
   - name: CRON
