@@ -29,7 +29,7 @@ tryCatch(
       ) |>
       dplyr::pull(load_date)
 
-      if (isTRUE(last_mod_origin > last_mod_subset)) {
+      if (!isTRUE(last_mod_origin <= last_mod_subset)) {
 
         data <-
           finbif::finbif_occurrence(
