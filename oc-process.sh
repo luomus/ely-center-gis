@@ -2,9 +2,9 @@
 
 i="all"
 
-while getopts ":t:e:i::" flag; do
+while getopts ":f:e:i::" flag; do
   case $flag in
-    t) t=${OPTARG} ;;
+    f) f=${OPTARG} ;;
     e) e=${OPTARG} ;;
     i) i=${OPTARG} ;;
   esac
@@ -59,7 +59,7 @@ else
 
 fi
 
-oc process -f $t \
+oc process -f $f \
   -p BRANCH=$BRANCH \
   -p DB_PORT=$DB_PORT \
   -p DB_NAME=$DB_NAME \
