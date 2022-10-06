@@ -17,7 +17,7 @@ tryCatch(
       fltr <- c(filter, list(subset = c(subset, n_subsets)))
 
       last_mod_subset <-
-        mod_time_subset |>
+        mod_time_subsets |>
         dplyr::filter(subset == !!subset) |>
         dplyr::pull(time)
 
