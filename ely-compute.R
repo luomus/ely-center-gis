@@ -74,6 +74,24 @@ tryCatch(
 
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
 
+        system2(
+          'ogr2ogr',
+          args = c(
+            "-f",
+            "GPKG",
+            "ely.gpkg",
+            sprintf(
+              "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
+              Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
+              Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
+            ),
+            sprintf("'subsets.%s'", geom),
+            if (file.exists("ely.gpkg")) "-update" else NULL,
+            "-nln",
+            geom
+          )
+        )
+
       }
 
     }
