@@ -62,7 +62,7 @@ parameters:
     value: /opt/app-root/src
   - name: STORAGE
     required: true
-    value: "40Gi"
+    value: "20Gi"
   - name: SMALL_STORAGE
     required: true
     value: "1Gi"
