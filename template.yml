@@ -42,16 +42,10 @@ parameters:
     required: true
   - name: DB_USER_PASSWORD
     required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
   - name: DB_PRIMARY_PASSWORD
     required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
   - name: DB_SUPER_PASSWORD
     required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
   - name: SVR
     required: true
     value: nginx
