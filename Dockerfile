@@ -1,4 +1,4 @@
-FROM rocker/r-base:4.2.1
+FROM rstudio/plumber:latest
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -22,16 +22,21 @@ COPY db-setup.R /home/user/db-setup.R
 COPY transform-footprints.R /home/user/transform-footprints.R
 COPY ely-subsets.R /home/user/ely-subsets.R
 COPY ely-compute.R /home/user/ely-compute.R
+COPY init.R /home/user/init.R
 
 ENV  HOME /home/user
 ENV  OPENBLAS_NUM_THREADS 1
 
 WORKDIR /home/user
 
-RUN  mkdir -p /home/user/var
+RUN  mkdir -p /home/user/var \
   && chgrp -R 0 /home/user \
   && chmod -R g=u /home/user /etc/passwd
 
 USER 1000
 
+EXPOSE 8000
+
 ENTRYPOINT ["entrypoint.sh"]
+
+CMD ["Rscript", "--vanilla", "init.R"]

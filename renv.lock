@@ -151,6 +151,14 @@
       "Hash": "fa53ce256cd280f468c080a58ea5ba8c",
       "Requirements": []
     },
+    "crayon": {
+      "Package": "crayon",
+      "Version": "1.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e8a1e41acf02548751f45c718d55aa6a",
+      "Requirements": []
+    },
     "curl": {
       "Package": "curl",
       "Version": "4.3.3",
@@ -294,6 +302,19 @@
         "vctrs"
       ]
     },
+    "httpuv": {
+      "Package": "httpuv",
+      "Version": "1.6.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fd090e236ae2dc0f0cdf33a9ec83afb6",
+      "Requirements": [
+        "R6",
+        "Rcpp",
+        "later",
+        "promises"
+      ]
+    },
     "httr": {
       "Package": "httr",
       "Version": "1.4.4",
@@ -424,6 +445,29 @@
       "Hash": "09eb987710984fc2905c7129c7d85e65",
       "Requirements": []
     },
+    "plumber": {
+      "Package": "plumber",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8b65a7a00ef8edc5ddc6fabf0aff1194",
+      "Requirements": [
+        "R6",
+        "crayon",
+        "ellipsis",
+        "httpuv",
+        "jsonlite",
+        "lifecycle",
+        "magrittr",
+        "mime",
+        "promises",
+        "rlang",
+        "sodium",
+        "stringi",
+        "swagger",
+        "webutils"
+      ]
+    },
     "pool": {
       "Package": "pool",
       "Version": "0.1.6.9000",
@@ -439,6 +483,20 @@
         "DBI",
         "R6",
         "later"
+      ]
+    },
+    "promises": {
+      "Package": "promises",
+      "Version": "1.2.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4ab2c43adb4d4699cf3690acd378d75d",
+      "Requirements": [
+        "R6",
+        "Rcpp",
+        "later",
+        "magrittr",
+        "rlang"
       ]
     },
     "proxy": {
@@ -502,6 +560,14 @@
         "units"
       ]
     },
+    "sodium": {
+      "Package": "sodium",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3606bb09e0914edd4fc8313b500dcd5e",
+      "Requirements": []
+    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.7.8",
@@ -521,6 +587,14 @@
         "magrittr",
         "stringi"
       ]
+    },
+    "swagger": {
+      "Package": "swagger",
+      "Version": "3.33.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f28d25ed70c903922254157c11b0081d",
+      "Requirements": []
     },
     "sys": {
       "Package": "sys",
@@ -597,6 +671,17 @@
         "cli",
         "glue",
         "rlang"
+      ]
+    },
+    "webutils": {
+      "Package": "webutils",
+      "Version": "1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "75d8b5b05fe22659b54076563f83f26a",
+      "Requirements": [
+        "curl",
+        "jsonlite"
       ]
     },
     "withr": {
