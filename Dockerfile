@@ -8,7 +8,6 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 ENV RENV_PATHS_LIBRARY renv/library
-ENV RENV_CONFIG_REPOS_OVERRIDE https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
 
 COPY renv.lock renv.lock
 
