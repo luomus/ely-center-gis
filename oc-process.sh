@@ -33,25 +33,41 @@ elif [ $i = "image" ]; then
 
   ITEM=".items[1]"
 
-elif [ $i = "deploy" ]; then
+elif [ $i = "deploy-db" ]; then
 
   ITEM=".items[2]"
 
-elif [ $i = "volume" ]; then
+elif [ $i = "deploy-svr" ]; then
 
   ITEM=".items[3]"
 
-elif [ $i = "service" ]; then
+elif [ $i = "volume-db" ]; then
 
   ITEM=".items[4]"
 
-elif [ $i = "route" ]; then
+elif [ $i = "volume-svr" ]; then
 
   ITEM=".items[5]"
 
-elif [ $i = "job" ]; then
+elif [ $i = "service-db" ]; then
 
   ITEM=".items[6]"
+
+elif [ $i = "route-db" ]; then
+
+  ITEM=".items[7]"
+
+elif [ $i = "service-svr" ]; then
+
+  ITEM=".items[8]"
+
+elif [ $i = "route-svr" ]; then
+
+  ITEM=".items[9]"
+
+elif [ $i = "job" ]; then
+
+  ITEM=".items[10]"
 
 else
 
@@ -66,6 +82,7 @@ oc process -f $f \
   -p DB_USER=$DB_USER \
   -p DB_PRIMARY_USER=$DB_PRIMARY_USER \
   -p DB_SUPER_USER=$DB_SUPER_USER \
+  -p SVR_PORT=$SVR_PORT \
   -p HOST=$HOST \
   -p FINBIF_ACCESS_TOKEN=$FINBIF_ACCESS_TOKEN \
   -p FINBIF_API_URL=$FINBIF_API_URL \

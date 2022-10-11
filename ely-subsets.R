@@ -133,6 +133,6 @@ tryCatch(
   }
 
 ) |>
-cat(file = "subsets-success.txt")
+cat(file = "var/subsets-success.txt")
 
-cat(format(Sys.time(), usetz = TRUE), file = "subsets-last-update.txt")
+cat(format(Sys.time(), usetz = TRUE), file = "var/subsets-last-update.txt")

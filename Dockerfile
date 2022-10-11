@@ -28,7 +28,7 @@ ENV  OPENBLAS_NUM_THREADS 1
 
 WORKDIR /home/user
 
-RUN  mkdir -p /home/user
+RUN  mkdir -p /home/user/var
   && chgrp -R 0 /home/user \
   && chmod -R g=u /home/user /etc/passwd
 

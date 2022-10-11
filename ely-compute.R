@@ -84,14 +84,14 @@ tryCatch(
           args = c(
             "-f",
             "GPKG",
-            "ely.gpkg",
+            "var/ely.gpkg",
             sprintf(
               "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
               Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
               Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
             ),
             sprintf("'subsets.%s'", geom),
-            if (file.exists("ely.gpkg")) "-update" else NULL,
+            if (file.exists("var/ely.gpkg")) "-update" else NULL,
             "-nln",
             geom
           )
@@ -111,6 +111,6 @@ tryCatch(
   }
 
 ) |>
-cat(file = "compute-success.txt")
+cat(file = "var/compute-success.txt")
 
-cat(format(Sys.time(), usetz = TRUE), file = "compute-last-update.txt")
+cat(format(Sys.time(), usetz = TRUE), file = "var/compute-last-update.txt")

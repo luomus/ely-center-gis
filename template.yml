@@ -52,9 +52,20 @@ parameters:
     required: true
     generate: expression
     from: "[a-zA-Z0-9]{64}"
+  - name: SVR
+    required: true
+    value: nginx
+  - name: SVR_PORT
+    required: true
+  - name: SVR_PATH
+    required: true
+    value: /opt/app-root/src
   - name: STORAGE
     required: true
     value: "40Gi"
+  - name: SMALL_STORAGE
+    required: true
+    value: "1Gi"
   - name: STORAGE_CLASS
     required: true
     value: "standard-rwo"
@@ -75,6 +86,9 @@ parameters:
   - name: CRON_CONCURRENCY
     required: true
     value: "Forbid"
+  - name: VAR_PATH
+    required: true
+    value: var
   - name: FINBIF_ACCESS_TOKEN
     required: true
   - name: FINBIF_API_URL
@@ -179,6 +193,37 @@ objects:
             claimName: ${DB}-${BRANCH}
     triggers:
     - type: ConfigChange
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${SVR}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APP}
+      deploymentconfig: ${SVR}-${BRANCH}
+    template:
+      metadata:
+        labels:
+          app: ${APP}
+          deploymentconfig: ${SVR}-${BRANCH}
+      spec:
+        containers:
+        - image: ${SVR}
+          name: ${SVR}-${BRANCH}
+        - volumeMounts:
+          - mountPath: ${SVR_PATH}
+            name: ${APP}-${BRANCH}
+          ports:
+          - containerPort: ${SVR_PORT}
+        volumes:
+        - name: ${APP}-${BRANCH}
+          persistentVolumeClaim:
+            claimName: ${APP}-${BRANCH}
+    triggers:
+    - type: ConfigChange
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
@@ -191,6 +236,17 @@ objects:
     resources:
       requests:
         storage: ${STORAGE}
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${APP}-${BRANCH}
+  spec:
+    accessModes:
+    - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${SMALL_STORAGE}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -205,6 +261,20 @@ objects:
     selector:
       app: ${APP}
       deploymentconfig: ${DB}-${BRANCH}
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${SVR}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    ports:
+    - name: ${SVR_PORT}
+      port: ${SVR_PORT}
+      targetPort: ${{SVR_PORT}}
+    selector:
+      app: ${APP}
+      deploymentconfig: ${SVR}-${BRANCH}
 - kind: Route
   apiVersion: v1
   metadata:
@@ -220,6 +290,22 @@ objects:
     to:
       kind: Service
       name: ${DB}-${BRANCH}
+    wildcardPolicy: None
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${SVR}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    host: ${SVR}-${BRANCH}.${HOST}
+    port:
+      targetPort: ${SVR_PORT}-tcp
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${SVR}-${BRANCH}
     wildcardPolicy: None
 - kind: CronJob
   apiVersion: batch/v1beta1
@@ -241,6 +327,9 @@ objects:
             - name: ${APP}-${BRANCH}-${CRON}
               image: ${APP}-${BRANCH}:${TAG}
               command: ${{CRON_CMD}}
+            - volumeMounts:
+              - mountPath: ${VAR_PATH}
+                name: ${APP}-${BRANCH}
               env:
               - name: PGHOST
                 value: ${DB}-${BRANCH}
@@ -264,4 +353,8 @@ objects:
                 value: ${TIMEOUT_IN_HOURS}
               - name: N_SUBSETS
                 value: ${N_SUBSETS}
+            volumes:
+            - name: ${APP}-${BRANCH}
+              persistentVolumeClaim:
+              claimName: ${APP}-${BRANCH}
             restartPolicy: Never
