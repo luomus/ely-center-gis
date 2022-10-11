@@ -1,8 +1,25 @@
 # ELY center GIS
 
-## Deploy
+## Deployment
+
+### Setup
 
 Log in to openshift server using `oc login`.
+
+If needed, create a new project with:
+
+`oc new-project ely-center-gis`
+
+Switch to project with:
+
+`oc project ely-center-gis`
+
+### Environment variables
+
+Deployment requires setting a number of environment variables. See `.env` file
+for required variables.
+
+### Deploy
 
 To deploy the entire app use:
  
