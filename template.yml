@@ -48,12 +48,13 @@ parameters:
     required: true
   - name: SVR
     required: true
-    value: nginx
+    value: plumber
   - name: SVR_PORT
     required: true
+    value: "8000"
   - name: SVR_PATH
     required: true
-    value: /opt/app-root/src
+    value: /var
   - name: STORAGE
     required: true
     value: "20Gi"
@@ -205,13 +206,16 @@ objects:
           deploymentconfig: ${SVR}-${BRANCH}
       spec:
         containers:
-        - image: ${SVR}
+        - image: ${APP}-${BRANCH}:${TAG}
           name: ${SVR}-${BRANCH}
           volumeMounts:
-          - mountPath: ${SVR_PATH}
+          - mountPath: ${VAR_PATH}
             name: ${APP}-${BRANCH}
           ports:
           - containerPort: ${SVR_PORT}
+          env:
+          - name: SVR_PORT
+            value: ${SVR_PORT}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
