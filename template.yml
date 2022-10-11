@@ -207,7 +207,7 @@ objects:
         containers:
         - image: ${SVR}
           name: ${SVR}-${BRANCH}
-        - volumeMounts:
+          volumeMounts:
           - mountPath: ${SVR_PATH}
             name: ${APP}-${BRANCH}
           ports:
