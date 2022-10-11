@@ -41,7 +41,13 @@ tryCatch(
             unlist = TRUE
           ) |>
           dplyr::mutate(subset = subset) |>
-          transform_footprint()
+          transform_footprint() |>
+          dplyr::mutate(
+            ely_center = purrr::map_chr(
+              sf::st_intersects(footprint_euref, ely_centers),
+              ~{ paste(ely_centers[.x, ][["name"]], collapse = ", ") }
+            )
+          )
 
         geoms <-
           data |>

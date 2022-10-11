@@ -15,7 +15,8 @@ tryCatch(
         pool::dbListObjects(con, DBI::Id(schema = "subsets")) |>
         getElement("table") |>
         lapply(methods::slot, "name") |>
-        vapply(getElement, "", "table")
+        vapply(getElement, "", "table") |>
+        setdiff("mod_time")
 
       for (geom in geoms) {
 
@@ -27,11 +28,15 @@ tryCatch(
             taxon = ifelse(is.na(taxon_id), reported_name, taxon_id),
             dplyr::across(
               dplyr::all_of(
-                sub("wgs84", "euref", c(select[["grp"]], facts[["grp"]]))
+                sub(
+                  "wgs84",
+                  "euref",
+                  c(select[["grp"]], facts[["grp"]], "ely_center")
+                )
               )
             )
           ) |>
-          mutate(
+          dplyr::mutate(
             dplyr::across(
               dplyr::all_of(select[["sum"]]),
               ~ {

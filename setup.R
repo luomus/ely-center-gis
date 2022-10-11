@@ -12,3 +12,5 @@ if (identical(getOption("finbif_api_url"), "https://apitest.laji.fi")) {
   assignInNamespace("var_names", finbif:::var_names_test, "finbif")
 
 }
+
+ely_centers <- readRDS("ely-centers.rds")
