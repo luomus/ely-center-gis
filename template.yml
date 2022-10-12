@@ -85,7 +85,7 @@ parameters:
     value: "Forbid"
   - name: VAR_PATH
     required: true
-    value: var
+    value: /home/user/var
   - name: FINBIF_ACCESS_TOKEN
     required: true
   - name: FINBIF_API_URL
