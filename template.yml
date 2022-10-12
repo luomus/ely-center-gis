@@ -280,7 +280,7 @@ objects:
     labels:
       app: ${APP}
   spec:
-    host: ${APP}-${BRANCH}.${HOST}
+    host: ${APP}-${DB}-${BRANCH}.${HOST}
     port:
       targetPort: ${DB_PORT}
     tls:
@@ -296,7 +296,7 @@ objects:
     labels:
       app: ${APP}
   spec:
-    host: ${SVR}-${BRANCH}.${HOST}
+    host: ${APP}-${SVR}-${BRANCH}.${HOST}
     port:
       targetPort: ${SVR_PORT}
     tls:
