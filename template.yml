@@ -282,7 +282,7 @@ objects:
   spec:
     host: ${APP}-${BRANCH}.${HOST}
     port:
-      targetPort: ${DB_PORT}-tcp
+      targetPort: ${DB_PORT}
     tls:
       termination: edge
     to:
@@ -298,7 +298,7 @@ objects:
   spec:
     host: ${SVR}-${BRANCH}.${HOST}
     port:
-      targetPort: ${SVR_PORT}-tcp
+      targetPort: ${SVR_PORT}
     tls:
       termination: edge
     to:
