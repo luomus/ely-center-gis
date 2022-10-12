@@ -53,11 +53,11 @@ elif [ $i = "service-db" ]; then
 
   ITEM=".items[6]"
 
-elif [ $i = "route-db" ]; then
+elif [ $i = "service-svr" ]; then
 
   ITEM=".items[7]"
 
-elif [ $i = "service-svr" ]; then
+elif [ $i = "route-db" ]; then
 
   ITEM=".items[8]"
 
