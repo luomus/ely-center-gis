@@ -226,6 +226,14 @@ objects:
             claimName: ${APP}-${BRANCH}
     triggers:
     - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${SVR}-${BRANCH}
+        from:
+          kind: ImageStreamTag
+          name: ${APP}-${BRANCH}:${TAG}
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
