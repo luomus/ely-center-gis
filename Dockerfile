@@ -1,8 +1,14 @@
-FROM rstudio/plumber:latest
+FROM rstudio/plumber:v1.2.0
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+      gdal-bin \
+      libgdal-dev \
+      libgeos-dev \
       libpq-dev \
+      libproj-dev \
+      libudunits2-dev \
+      libz-dev \
  && apt-get autoremove -y \
  && apt-get autoclean -y \
  && rm -rf /var/lib/apt/lists/*
@@ -18,7 +24,7 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ely.R /home/user/ely.R
 COPY setup.R /home/user/setup.R
 COPY db-setup.R /home/user/db-setup.R
-COPY transform-footprints.R /home/user/transform-footprints.R
+COPY transform-footprint.R /home/user/transform-footprint.R
 COPY ely-subsets.R /home/user/ely-subsets.R
 COPY ely-compute.R /home/user/ely-compute.R
 COPY init.R /home/user/init.R
