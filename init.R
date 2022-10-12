@@ -4,6 +4,7 @@ p <- pr()
 
 p <- pr_filter(
   p,
+  "auth",
   function(req, res) {
 
     token <- identical(
