@@ -10,7 +10,7 @@ p <- pr_filter(
   function(req, res) {
 
     token <- identical(
-      req[["argsQuery"]]["access_token"], Sys.getenv("USER_ACCESS_TOKEN")
+      req[["argsQuery"]][["access_token"]], Sys.getenv("USER_ACCESS_TOKEN")
     )
 
     status <- grepl("status", req[["PATH_INFO"]])
