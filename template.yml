@@ -337,7 +337,7 @@ objects:
             - name: ${APP}-${BRANCH}-${CRON}
               image: ${APP}-${BRANCH}:${TAG}
               command: ${{CRON_CMD}}
-            - volumeMounts:
+              volumeMounts:
               - mountPath: ${VAR_PATH}
                 name: ${APP}-${BRANCH}
               env:
