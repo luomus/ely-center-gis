@@ -1,5 +1,7 @@
 library(plumber)
 
+if (!dir.exists("var/status")) dir.create("var/status")
+
 p <- pr()
 
 p <- pr_filter(
