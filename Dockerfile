@@ -21,6 +21,7 @@ RUN R -e "install.packages('renv')" \
  && R -e "renv::restore()"
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ely-centers.rds /home/user/ely-centers.rds
 COPY ely.R /home/user/ely.R
 COPY setup.R /home/user/setup.R
 COPY db-setup.R /home/user/db-setup.R
