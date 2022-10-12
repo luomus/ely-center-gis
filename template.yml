@@ -55,6 +55,8 @@ parameters:
   - name: SVR_PATH
     required: true
     value: /var
+  - name: USER_ACCESS_TOKEN
+    required: true
   - name: STORAGE
     required: true
     value: "20Gi"
@@ -216,6 +218,8 @@ objects:
           env:
           - name: SVR_PORT
             value: ${SVR_PORT}
+          - name: USER_ACCESS_TOKEN
+            value: ${USER_ACCESS_TOKEN}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:

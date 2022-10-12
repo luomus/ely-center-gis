@@ -111,6 +111,8 @@ tryCatch(
   }
 
 ) |>
-cat(file = "var/compute-success.txt")
+cat(file = "var/status/compute-success.txt")
 
-cat(format(Sys.time(), usetz = TRUE), file = "var/compute-last-update.txt")
+cat(
+  format(Sys.time(), usetz = TRUE), file = "var/status/compute-last-update.txt"
+)
