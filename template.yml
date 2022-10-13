@@ -351,6 +351,8 @@ objects:
                 value: ${DB_SUPER_PASSWORD}
               - name: DB_NAME
                 value: ${DB_NAME}
+              - name: DB_USER
+                value: ${DB_USER}
               - name: FINBIF_ACCESS_TOKEN
                 value: ${FINBIF_ACCESS_TOKEN}
               - name: FINBIF_API_URL
