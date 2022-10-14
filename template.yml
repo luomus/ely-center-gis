@@ -368,5 +368,5 @@ objects:
             volumes:
             - name: ${APP}-${BRANCH}
               persistentVolumeClaim:
-              claimName: ${APP}-${BRANCH}
+                claimName: ${APP}-${BRANCH}
             restartPolicy: Never
