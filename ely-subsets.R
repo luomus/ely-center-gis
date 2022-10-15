@@ -17,7 +17,13 @@ tryCatch(
       dplyr::slice_max(time, with_ties = FALSE) |>
       dplyr::pull(subset)
 
-    if (isTRUE(last_subset < n_subsets)) start <- last_subset + 1L else 1L
+    start <- 1L
+
+    if (isTRUE(last_subset < n_subsets)) {
+
+      start <- last_subset + start
+
+    }
 
     for (subset in c(seq.int(start, n_subsets), seq_len(start - 1L))) {
 
