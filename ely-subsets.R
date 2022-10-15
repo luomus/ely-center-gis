@@ -132,7 +132,7 @@ tryCatch(
 
     }
 
-    message(sprintf("INFO [%s] Job complete", Sys.time()))
+    message(sprintf("INFO [%s] Subsets job complete", Sys.time()))
 
     "true"
 

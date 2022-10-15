@@ -101,6 +101,10 @@ tryCatch(
 
     }
 
+    message(sprintf("INFO [%s] Compute job complete", Sys.time()))
+
+    "true"
+
   },
   error = function(e) {
 
