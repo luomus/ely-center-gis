@@ -35,7 +35,7 @@ select <- list(
     "team",
     "municipality",
     "locality",
-    "province",
+    "region",
     "date_start",
     "date_end",
     "footprint_wgs84",
