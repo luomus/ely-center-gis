@@ -44,6 +44,10 @@ tryCatch(
 
       if (!isTRUE(last_mod_origin <= last_mod_subset)) {
 
+        message(
+          sprintf("INFO [%s] Subset %s updating...", Sys.time(), subset)
+        )
+
         data <-
           finbif::finbif_occurrence(
             filter = fltr,

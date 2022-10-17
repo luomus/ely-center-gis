@@ -20,6 +20,10 @@ tryCatch(
 
       for (geom in geoms) {
 
+        message(
+          sprintf("INFO [%s] %s layer updating...", Sys.time(), geom)
+        )
+
         tbl <- DBI::Id(schema = "subsets", table = geom)
 
         ely <-
