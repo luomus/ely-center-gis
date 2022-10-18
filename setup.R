@@ -19,3 +19,4 @@ if (identical(getOption("finbif_api_url"), "https://apitest.laji.fi")) {
 }
 
 ely_centers <- readRDS("ely-centers.rds")
+ely_centers <- sf::st_transform(ely_centers, 3067L)
