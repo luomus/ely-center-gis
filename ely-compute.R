@@ -88,20 +88,22 @@ tryCatch(
           args = c(
             "-f",
             "GPKG",
-            "var/ely.gpkg",
+            "ely.gpkg",
             sprintf(
               "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
               Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
               Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
             ),
             sprintf("'subsets.%s'", geom),
-            if (file.exists("var/ely.gpkg")) "-update" else NULL,
+            if (file.exists("ely.gpkg")) "-update" else NULL,
             "-nln",
             geom
           )
         )
 
       }
+
+      zip("var/ely.zip", "ely.gpkg" , flags = "-rj9qX")
 
     }
 
