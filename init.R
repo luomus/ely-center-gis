@@ -67,7 +67,7 @@ p <- pr_filter(
   }
 )
 
-p <- pr_get(p, "/health", \() "")
+p <- pr_get(p, "/healthz", \() "")
 
 p <- pr_static(p, "/", "./var")
 
