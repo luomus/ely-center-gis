@@ -20,9 +20,7 @@ tryCatch(
 
       for (geom in geoms) {
 
-        message(
-          sprintf("INFO [%s] %s layer updating...", Sys.time(), geom)
-        )
+        message(sprintf("INFO [%s] %s layer updating...", Sys.time(), geom))
 
         tbl <- DBI::Id(schema = "subsets", table = geom)
 
@@ -68,10 +66,9 @@ tryCatch(
                 if (all(is.na(.x))) NA else stringr::str_flatten(.x, "; ")
               }
             ),
-            .groups = "keep"
+            .groups = "drop"
           ) |>
-          dplyr::ungroup() |>
-          dplyr::select(!c(taxon, occurrence_status))
+          dplyr::select(-all_of(c("occurrence_status", "subset")))
 
         tbl <- DBI::Id(schema = "ely", table = geom)
 
