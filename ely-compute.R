@@ -68,7 +68,7 @@ tryCatch(
             ),
             .groups = "drop"
           ) |>
-          dplyr::select(-all_of(c("occurrence_status", "subset")))
+          dplyr::select(-all_of(c("occurrence_status", "taxon")))
 
         tbl <- DBI::Id(schema = "ely", table = geom)
 
@@ -79,6 +79,8 @@ tryCatch(
         }
 
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
+
+        unlink("ely.gpkg")
 
         system2(
           'ogr2ogr',
@@ -91,7 +93,7 @@ tryCatch(
               Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
               Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
             ),
-            sprintf("'subsets.%s'", geom),
+            sprintf("'ely.%s'", geom),
             if (file.exists("ely.gpkg")) "-update" else NULL,
             "-nln",
             geom
