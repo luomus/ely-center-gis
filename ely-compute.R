@@ -18,6 +18,8 @@ tryCatch(
         vapply(getElement, "", "table") |>
         setdiff("mod_time")
 
+      unlink("ely.gpkg")
+
       for (geom in geoms) {
 
         message(sprintf("INFO [%s] %s layer updating...", Sys.time(), geom))
@@ -79,8 +81,6 @@ tryCatch(
         }
 
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
-
-        unlink("ely.gpkg")
 
         system2(
           'ogr2ogr',
