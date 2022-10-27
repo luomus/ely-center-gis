@@ -68,6 +68,7 @@ tryCatch(
                 if (all(is.na(.x))) NA else stringr::str_flatten(.x, "; ")
               }
             ),
+            group_count = n(),
             .groups = "drop"
           ) |>
           dplyr::select(-all_of(c("occurrence_status", "taxon")))
