@@ -71,7 +71,9 @@ tryCatch(
             group_count = n(),
             .groups = "drop"
           ) |>
-          dplyr::select(-all_of(c("occurrence_status", "taxon")))
+          dplyr::select(all_of(names(cols))) |>
+          dplyr::rename_with(~cols, names(cols)) |>
+          dplyr::arrange(.data[[!!cols[["date_start"]]]])
 
         tbl <- DBI::Id(schema = "ely", table = geom)
 
