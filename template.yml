@@ -52,9 +52,6 @@ parameters:
   - name: SVR_PORT
     required: true
     value: "8000"
-  - name: SVR_PATH
-    required: true
-    value: /var
   - name: USER_ACCESS_TOKEN
     required: true
   - name: STORAGE
