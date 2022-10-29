@@ -2,6 +2,14 @@ FROM rstudio/plumber:v1.2.0
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+      software-properties-common \
+ && apt-get autoremove -y \
+ && apt-get autoclean -y \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
       gdal-bin \
       libgdal-dev \
       libgeos-dev \
