@@ -1,4 +1,4 @@
-FROM rstudio/plumber:v1.2.0
+FROM rstudio/plumber:latest
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
