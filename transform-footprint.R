@@ -9,6 +9,8 @@ transform_footprint <- function(df) {
 
   footprint[is.na(footprint)] <- "POLYGON EMPTY"
 
+  df[["footprint_euref"]] <- footprint
+
   footprint <- sf::st_as_sfc(footprint, crs = 4326L)
 
   footprint <- sf::st_transform(footprint, crs = 3067L)
@@ -48,9 +50,9 @@ transform_footprint <- function(df) {
 
   }
 
-  df[["footprint_euref"]] <- footprint
+  df[["geometry"]] <- footprint
 
-  sf::st_geometry(df) <- "footprint_euref"
+  sf::st_geometry(df) <- "geometry"
 
   df
 
