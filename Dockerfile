@@ -1,6 +1,6 @@
 FROM rstudio/plumber:v1.2.0
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
       software-properties-common \
