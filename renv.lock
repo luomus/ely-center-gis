@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.2.1",
+    "Version": "4.2.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -255,15 +255,15 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.7.0.9001",
+      "Version": "0.7.0.9002",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "ed2b4cd3d1ae0795f40e744d0a78ec0e2101a272",
-      "Hash": "effdbdfe168f23c40e2785e2a0839893",
+      "RemoteSha": "1eb33b1281125b1a35bfeb2f2e02c50544dbedb7",
+      "Hash": "3627c532427afc086708652c09356848",
       "Requirements": [
         "digest",
         "httr",
