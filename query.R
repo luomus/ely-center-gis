@@ -64,7 +64,7 @@ select <- list(
     "life_stage",
     "record_notes",
     "event_notes",
-    "restriction_reasons",
+    "restriction_reason",
     "document_notes",
     "document_id",
     "event_id"
