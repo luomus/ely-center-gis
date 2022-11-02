@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.2.1
+FROM rocker/r-ver:4.2.2
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -15,6 +15,7 @@ RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable \
       libgeos-dev \
       libpq-dev \
       libproj-dev \
+      libsodium-dev \
       libudunits2-dev \
       libz-dev \
  && apt-get autoremove -y \
