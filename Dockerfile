@@ -1,8 +1,9 @@
-FROM rocker/r-ver:4.2.2
+FROM rocker/r-ver:4.2.1
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       software-properties-common \
+      gpg-agent \
  && apt-get autoremove -y \
  && apt-get autoclean -y \
  && rm -rf /var/lib/apt/lists/*
