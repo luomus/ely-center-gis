@@ -50,9 +50,9 @@ transform_footprint <- function(df) {
 
   }
 
-  df[["geometry"]] <- footprint
+  df[["geom"]] <- footprint
 
-  sf::st_geometry(df) <- "geometry"
+  sf::st_geometry(df) <- "geom"
 
   df
 

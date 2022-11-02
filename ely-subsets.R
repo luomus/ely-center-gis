@@ -61,7 +61,7 @@ tryCatch(
           transform_footprint() |>
           dplyr::mutate(
             ely_center = purrr::map_chr(
-              sf::st_intersects(geometry, ely_centers),
+              sf::st_intersects(geom, ely_centers),
               ~{ paste(ely_centers[.x, ][["name"]], collapse = ", ") }
             )
           )
