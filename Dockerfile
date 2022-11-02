@@ -1,7 +1,6 @@
-FROM rstudio/plumber:v1.2.0
+FROM rstudio/plumber:next
 
-RUN ls /etc/apt/trusted.gpg.d/ \
- && apt-get update \
+RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       software-properties-common \
  && apt-get autoremove -y \
