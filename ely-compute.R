@@ -35,7 +35,7 @@ tryCatch(
                 sub(
                   "wgs84",
                   "euref",
-                  c(select[["grp"]], facts[["grp"]], "ely_center")
+                  c(select[["grp"]], facts[["grp"]], "ely_center", "geom")
                 )
               )
             )
