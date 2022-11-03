@@ -151,5 +151,6 @@ cols <- c(
   "Havainnon määrän yksikkö" = "Havainnon_määrän_yksikkö",
   "Vesistöalue" = "Vesistöalue",
   "Merialueen tunniste" = "Merialueen_tunniste",
-  "ely_center" = "Vastuualue"
+  "ely_center" = "Vastuualue",
+  "geom" = "geom"
 )
