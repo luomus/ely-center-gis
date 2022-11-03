@@ -138,7 +138,7 @@ cols <- c(
   "collection" = "Aineisto",
   "data_source" = "Aineistolähde",
   "collection_quality" = "Aineiston_laatu",
-  "restriction_reasons" = "Karkeistuksen_syy",
+  "restriction_reason" = "Karkeistuksen_syy",
   "document_notes" = "Havaintoerän_lisätiedot",
   "atlas_code" = "Atlaskoodi",
   "atlas_class" = "Atlasluokka",
