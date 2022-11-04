@@ -68,7 +68,7 @@ tryCatch(
                 if (all(is.na(.x))) NA else stringr::str_flatten(.x, "; ")
               }
             ),
-            group_count = n(),
+            group_count = dplyr::n(),
             .groups = "drop"
           ) |>
           dplyr::select(all_of(names(cols))) |>
