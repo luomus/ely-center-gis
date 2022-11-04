@@ -255,15 +255,15 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.7.0.9003",
+      "Version": "0.7.0.9004",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "bca6e31f1a40874a6590ebb6788b1b09d908c118",
-      "Hash": "ce4ac883de2410bfd13295aa255087d2",
+      "RemoteSha": "747985f147572c7b1a379b1c64eb4667198c109b",
+      "Hash": "123e050fa9e35060ef976fd500535c6c",
       "Requirements": [
         "digest",
         "httr",
