@@ -57,7 +57,20 @@ tryCatch(
             locale = "fi",
             unlist = TRUE
           ) |>
-          dplyr::mutate(subset = subset) |>
+          dplyr::mutate(
+            subset = subset,
+            atlas_code = as.integer(sub("\\D+", "", atlas_code)),
+            atlas_class = dplyr::recode(
+              atlas_class,
+              "Epätodennäköinen pesintä" = 1,
+              "Mahdollinen pesintä" = 2,
+              "Todennäköinen pesintä" = 3,
+              "Varma pesintä" = 4
+            )
+          ) |>
+          dplyr::mutate(
+            atlas_code = ifelse(atlas_code < 10, atlas_code * 10L, atlas_code)
+          ) |>
           transform_footprint() |>
           dplyr::mutate(
             ely_center = purrr::map_chr(
