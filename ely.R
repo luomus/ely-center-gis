@@ -1,6 +1,7 @@
 source("setup.R")
 source("db-setup.R")
 source("query.R")
-source("transform-footprints.R")
+source("transform-footprint.R")
 source("ely-subsets.R")
 source("ely-compute.R")
+pool::poolClose(con)

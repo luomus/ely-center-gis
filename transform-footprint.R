@@ -48,9 +48,11 @@ transform_footprint <- function(df) {
 
   }
 
-  df[["footprint_euref"]] <- footprint
+  df[["footprint_euref"]] <- sf::st_as_text(footprint)
 
-  sf::st_geometry(df) <- "footprint_euref"
+  df[["geom"]] <- footprint
+
+  sf::st_geometry(df) <- "geom"
 
   df
 

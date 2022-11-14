@@ -12,12 +12,25 @@ tryCatch(
       con, DBI::Id(schema = "subsets", table = "mod_time")
     )
 
-    for (subset in seq_len(n_subsets)) {
+    last_subset <-
+      mod_time_subsets |>
+      dplyr::slice_max(time, with_ties = FALSE) |>
+      dplyr::pull(subset)
+
+    start <- 1L
+
+    if (isTRUE(last_subset < n_subsets)) {
+
+      start <- last_subset + start
+
+    }
+
+    for (subset in c(seq.int(start, n_subsets), seq_len(start - 1L))) {
 
       fltr <- c(filter, list(subset = c(subset, n_subsets)))
 
       last_mod_subset <-
-        mod_time_subset |>
+        mod_time_subsets |>
         dplyr::filter(subset == !!subset) |>
         dplyr::pull(time)
 
@@ -29,7 +42,11 @@ tryCatch(
       ) |>
       dplyr::pull(load_date)
 
-      if (isTRUE(last_mod_origin > last_mod_subset)) {
+      if (!isTRUE(last_mod_origin <= last_mod_subset)) {
+
+        message(
+          sprintf("INFO [%s] Subset %s updating...", Sys.time(), subset)
+        )
 
         data <-
           finbif::finbif_occurrence(
@@ -40,8 +57,27 @@ tryCatch(
             locale = "fi",
             unlist = TRUE
           ) |>
-          dplyr::mutate(subset = subset) |>
-          transform_footprint()
+          dplyr::mutate(
+            subset = subset,
+            atlas_code = as.integer(sub("\\D+", "", atlas_code)),
+            atlas_class = dplyr::recode(
+              atlas_class,
+              "Epätodennäköinen pesintä" = 1,
+              "Mahdollinen pesintä" = 2,
+              "Todennäköinen pesintä" = 3,
+              "Varma pesintä" = 4
+            )
+          ) |>
+          dplyr::mutate(
+            atlas_code = ifelse(atlas_code < 10, atlas_code * 10L, atlas_code)
+          ) |>
+          transform_footprint() |>
+          dplyr::mutate(
+            ely_center = purrr::map_chr(
+              sf::st_intersects(geom, ely_centers),
+              ~{ paste(ely_centers[.x, ][["name"]], collapse = ", ") }
+            )
+          )
 
         geoms <-
           data |>
@@ -113,7 +149,7 @@ tryCatch(
 
     }
 
-    message(sprintf("INFO [%s] Job complete", Sys.time()))
+    message(sprintf("INFO [%s] Subsets job complete", Sys.time()))
 
     "true"
 
@@ -127,6 +163,8 @@ tryCatch(
   }
 
 ) |>
-cat(file = "subsets-success.txt")
+cat(file = "var/status/subsets-success.txt")
 
-cat(format(Sys.time(), usetz = TRUE), file = "subsets-last-update.txt")
+cat(
+  format(Sys.time(), usetz = TRUE), file = "var/status/subsets-last-update.txt"
+)
