@@ -86,10 +86,10 @@
     },
     "bit": {
       "Package": "bit",
-      "Version": "4.0.4",
+      "Version": "4.0.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f36715f14d94678eea9933af927bc15d",
+      "Hash": "d242abec29412ce988848d0294b208fd",
       "Requirements": []
     },
     "bit64": {
@@ -262,8 +262,8 @@
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "ab06a187239e853b6a0543942570172704e5819c",
-      "Hash": "15cd42b5ae4a3222922e13a50d1d58f1",
+      "RemoteSha": "4f339b5b17b27b0995b3a070b37657e7aebf0839",
+      "Hash": "363fe107d7d8fb342be594731fd4fc50",
       "Requirements": [
         "digest",
         "httr",
@@ -543,10 +543,10 @@
     },
     "s2": {
       "Package": "s2",
-      "Version": "1.1.0",
+      "Version": "1.1.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "73748e27d17db3c1c400e8114fcf9824",
+      "Hash": "328ea3dc4329fc40720456c8e0c75445",
       "Requirements": [
         "Rcpp",
         "wk"
@@ -554,10 +554,10 @@
     },
     "sf": {
       "Package": "sf",
-      "Version": "1.0-8",
+      "Version": "1.0-9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "153da622b27630793858f24436bc0871",
+      "Hash": "8a348490fefb623e7935f405230900a7",
       "Requirements": [
         "DBI",
         "Rcpp",
@@ -680,10 +680,10 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.5.0",
+      "Version": "0.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "001fd6a5ebfff8316baf9fb2b5516dc9",
+      "Hash": "970324f6572b4fd81db507b5d4062cb0",
       "Requirements": [
         "cli",
         "glue",
