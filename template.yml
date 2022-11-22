@@ -59,7 +59,6 @@ parameters:
     value: "20Gi"
   - name: SMALL_STORAGE
     required: true
-    value: "1Gi"
   - name: STORAGE_CLASS
     required: true
     value: "standard-rwo"
