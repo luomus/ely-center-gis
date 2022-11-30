@@ -62,17 +62,13 @@ elif [ $i = "service-svr" ]; then
 
   ITEM=".items[7]"
 
-elif [ $i = "route-db" ]; then
+elif [ $i = "route-svr" ]; then
 
   ITEM=".items[8]"
 
-elif [ $i = "route-svr" ]; then
-
-  ITEM=".items[9]"
-
 elif [ $i = "job" ]; then
 
-  ITEM=".items[10]"
+  ITEM=".items[9]"
 
 else
 

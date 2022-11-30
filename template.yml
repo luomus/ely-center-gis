@@ -284,22 +284,6 @@ objects:
 - kind: Route
   apiVersion: v1
   metadata:
-    name: ${DB}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    host: ${APP}-${DB}-${BRANCH}.${HOST}
-    port:
-      targetPort: ${DB_PORT}
-    tls:
-      termination: edge
-    to:
-      kind: Service
-      name: ${DB}-${BRANCH}
-    wildcardPolicy: None
-- kind: Route
-  apiVersion: v1
-  metadata:
     name: ${SVR}-${BRANCH}
     labels:
       app: ${APP}
