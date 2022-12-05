@@ -255,15 +255,10 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.7.0.9004",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "luomus",
-      "RemoteRepo": "finbif",
-      "RemoteRef": "dev",
-      "RemoteSha": "4f339b5b17b27b0995b3a070b37657e7aebf0839",
-      "Hash": "363fe107d7d8fb342be594731fd4fc50",
+      "Version": "0.7.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "95ac34cd3543ed1c0169a52f1ea1b883",
       "Requirements": [
         "digest",
         "httr",
@@ -585,14 +580,18 @@
     },
     "stringr": {
       "Package": "stringr",
-      "Version": "1.4.1",
+      "Version": "1.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a66ad12140cd34d4f9dfcc19e84fc2a5",
+      "Hash": "671a4d384ae9d32fc47a14e98bfa3dc8",
       "Requirements": [
+        "cli",
         "glue",
+        "lifecycle",
         "magrittr",
-        "stringi"
+        "rlang",
+        "stringi",
+        "vctrs"
       ]
     },
     "swagger": {

@@ -51,6 +51,15 @@ p <- pr_filter(
       req[["argsQuery"]][["access_token"]], Sys.getenv("USER_ACCESS_TOKEN")
     )
 
+    if (grepl("pirkanmaa", req[["PATH_INFO"]])) {
+
+      token <- identical(
+        req[["argsQuery"]][["access_token"]],
+        Sys.getenv("PIRKANMAA_ACCESS_TOKEN")
+      )
+
+    }
+
     status <- grepl("status|healthz", req[["PATH_INFO"]])
 
     if (token || status) {
