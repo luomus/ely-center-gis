@@ -77,8 +77,7 @@ tryCatch(
               sf::st_intersects(geom, ely_centers),
               ~{ paste(ely_centers[.x, ][["name"]], collapse = ", ") }
             )
-          ) |>
-          sf::st_make_valid()
+          )
 
         geoms <-
           data |>

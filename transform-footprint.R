@@ -1,6 +1,6 @@
 #' @noRd
 #' @importFrom dplyr rowwise ungroup
-#' @importFrom sf st_as_sfc st_is_empty st_multipoint st_transform
+#' @importFrom sf st_as_sfc st_is_empty st_make_valid st_multipoint st_transform
 transform_footprint <- function(df) {
 
   footprint <- df[["footprint_wgs84"]]
@@ -20,6 +20,8 @@ transform_footprint <- function(df) {
   uncollected <- lapply(footprint[gc], uncollect)
 
   footprint[gc] <- sf::st_as_sfc(uncollected, crs = 3067L)
+
+  footprint <- lapply(footprint, sf::st_make_valid)
 
   footprint <- lapply(footprint, cast_to_multi)
 
