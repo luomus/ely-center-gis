@@ -151,7 +151,7 @@ tryCatch(
         }
 
         ely_pirkanmaa <- dplyr::filter(
-          ely, Vastuualue == "Pirkanmaan ELY-keskus"
+          ely, Vastuualue %LIKE% "Pirkanmaan ELY-keskus"
         )
 
         ely_pirkanmaa <- dplyr::compute(
