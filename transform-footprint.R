@@ -120,7 +120,17 @@ to_polygon <- function(x) {
 
   if (geometry_type_chr(x) %in% geometries) {
 
-    x <- sf::st_buffer(x, .5, 1L)
+    x <- sf::st_buffer(x, 5L, 1L)
+
+  }
+
+  if (length(x) > 1L) {
+
+    x[] <- lapply(x, lapply, round)
+
+  } else {
+
+    x[] <- lapply(x, round)
 
   }
 
