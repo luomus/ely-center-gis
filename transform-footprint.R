@@ -124,7 +124,7 @@ to_polygon <- function(x) {
 
   }
 
-  if (length(x) > 1L) {
+  if (grepl("^MULTI", geometry_type_chr(x))) {
 
     x[] <- lapply(x, lapply, round)
 
