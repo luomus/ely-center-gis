@@ -114,12 +114,6 @@ tryCatch(
 
         tbl <- DBI::Id(schema = "ely", table = geom)
 
-        if (pool::dbExistsTable(con, tbl)) {
-
-          pool::dbRemoveTable(con, tbl)
-
-        }
-
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
 
         system2(
@@ -144,12 +138,6 @@ tryCatch(
           schema = "ely", table = paste0(geom, "_pirkanmaa")
         )
 
-        if (pool::dbExistsTable(con, tbl_pirkanmaa)) {
-
-          pool::dbRemoveTable(con, tbl_pirkanmaa)
-
-        }
-
         ely_pirkanmaa <- dplyr::filter(
           ely, grepl("Pirkanmaan ELY-keskus", Vastuualue)
         )
@@ -157,6 +145,8 @@ tryCatch(
         ely_pirkanmaa <- dplyr::compute(
           ely_pirkanmaa, tbl_pirkanmaa, temporary = FALSE
         )
+
+        pool::dbRemoveTable(con, tbl)
 
         system2(
           'ogr2ogr',
@@ -175,6 +165,8 @@ tryCatch(
             geom
           )
         )
+
+        pool::dbRemoveTable(con, tbl_pirkanmaa)
 
       }
 
