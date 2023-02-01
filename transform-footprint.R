@@ -64,33 +64,29 @@ transform_footprint <- function(df) {
 #' @importFrom sf st_multilinestring st_multipoint st_multipolygon
 uncollect <- function(x) {
 
-  gtype <- geometry_type_chr(x)
+  cgtypes <- vapply(x, geometry_type_chr, "")
 
-  if (identical(gtype, "GEOMETRYCOLLECTION")) {
+  utype <- unique(sub("^MULTI", "", cgtypes))
 
-    cgtypes <- vapply(x, geometry_type_chr, character(1L))
+  if (identical(length(utype), 1L)) {
 
-    utype <- unique(sub("^MULTI", "", cgtypes))
+    x <- switch(
+      utype,
+      "POINT" = sf::st_multipoint(matrix(unlist(x), ncol = 2L, byrow = TRUE)),
+      "LINESTRING" = sf::st_multilinestring(x),
+      "POLYGON" = sf::st_multipolygon(x),
+      x
+    )
 
-    if (identical(length(utype), 1L)) {
+  } else {
 
-      x <- switch(
-        utype,
-        "POINT" = sf::st_multipoint(matrix(unlist(x), ncol = 2L, byrow = TRUE)),
-        "LINESTRING" = sf::st_multilinestring(x),
-        "POLYGON" = sf::st_multipolygon(x),
-        x
-      )
+    x <- lapply(x, to_polygon)
 
-    } else {
-
-      x <- lapply(x, to_polygon)
-
-      x <- sf::st_multipolygon(x)
-
-    }
+    x <- sf::st_multipolygon(x)
 
   }
+
+  x[] <- lapply(x, lapply, round)
 
   x
 
@@ -121,16 +117,6 @@ to_polygon <- function(x) {
   if (geometry_type_chr(x) %in% geometries) {
 
     x <- sf::st_buffer(x, 5L, 1L)
-
-  }
-
-  if (grepl("^MULTI", geometry_type_chr(x))) {
-
-    x[] <- lapply(x, lapply, round)
-
-  } else {
-
-    x[] <- lapply(x, round)
 
   }
 
