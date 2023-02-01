@@ -86,7 +86,11 @@ uncollect <- function(x) {
 
   }
 
-  x[] <- lapply(x, lapply, round)
+  if (identical(geometry_type_chr(x), "MULTIPOLYGON")) {
+
+    x[] <- lapply(x, lapply, round)
+
+  }
 
   x
 
