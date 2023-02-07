@@ -115,10 +115,10 @@
     },
     "class": {
       "Package": "class",
-      "Version": "7.3-20",
+      "Version": "7.3-21",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "da09d82223e669d270e47ed24ac8686e",
+      "Hash": "8ae0d4328e2eb3a582dfd5391a3663b7",
       "Requirements": [
         "MASS"
       ]
@@ -251,15 +251,15 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.7.1.9000",
+      "Version": "0.7.2.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "1fb507a444a8d1dad281b89f79faad23bc130667",
-      "Hash": "8934c6b76359f3c0a90df30f33a3b35b",
+      "RemoteSha": "e78adc5e4611fcfd2a2cca1661a426727c0313f9",
+      "Hash": "cf48847817bda43c0dc49003b86304bd",
       "Requirements": [
         "digest",
         "httr",
