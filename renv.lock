@@ -258,8 +258,8 @@
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "e78adc5e4611fcfd2a2cca1661a426727c0313f9",
-      "Hash": "cf48847817bda43c0dc49003b86304bd",
+      "RemoteSha": "d1b7faffe6a0b4f5e47384738211e086a78f3a9f",
+      "Hash": "e82acba54d6ef75aee9870d347462c4c",
       "Requirements": [
         "digest",
         "httr",
