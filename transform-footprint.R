@@ -23,6 +23,10 @@ transform_footprint <- function(df) {
 
   footprint <- lapply(footprint, sf::st_make_valid)
 
+  is_gc <- which(geometry_type_chr(footprint) == "GEOMETRYCOLLECTION")
+
+  message(paste(df[is_gc, "record_id"], collapse = " "), appendLF = FALSE)
+
   footprint <- lapply(footprint, cast_to_multi)
 
   footprint <- sf::st_as_sfc(footprint, crs = 3067L)
