@@ -23,7 +23,9 @@ transform_footprint <- function(df) {
 
   footprint <- lapply(footprint, sf::st_make_valid)
 
-  is_gc <- which(geometry_type_chr(footprint) == "GEOMETRYCOLLECTION")
+  is_gc <- vapply(footprint, geometry_type_chr, "") == "GEOMETRYCOLLECTION"
+
+  is_gc <- which(is_gc)
 
   message(paste(df[is_gc, "record_id"], collapse = " "), appendLF = FALSE)
 
