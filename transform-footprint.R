@@ -15,10 +15,6 @@ transform_footprint <- function(df) {
 
   footprint <- make_valid(footprint)
 
-  # Should be applied twice to clean up any geometry collections created by st_make_valid
-
-  footprint <- make_valid(footprint)
-
   geoms <- vapply(footprint, geometry_type_chr, "")
 
   footprint <- lapply(footprint, cast_to_multi)
@@ -75,7 +71,7 @@ make_valid <- function(x) {
 }
 
 #' @noRd
-#' @importFrom sf st_multilinestring st_multipoint st_multipolygon
+#' @importFrom sf st_make_valid st_multilinestring st_multipoint st_multipolygon
 uncollect <- function(x) {
 
   cgtypes <- vapply(x, geometry_type_chr, "")
@@ -103,6 +99,16 @@ uncollect <- function(x) {
   if (identical(geometry_type_chr(x), "MULTIPOLYGON")) {
 
     x[] <- lapply(x, lapply, round)
+
+    x <- sf::st_make_valid(x)
+
+    if (identical(geometry_type_chr(x), "GEOMETRYCOLLECTION")) {
+
+      x <- lapply(x, to_polygon)
+
+      x <- sf::st_multipolygon(x)
+
+    }
 
   }
 
