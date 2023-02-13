@@ -370,10 +370,10 @@
     },
     "lubridate": {
       "Package": "lubridate",
-      "Version": "1.9.1",
+      "Version": "1.9.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "88ad585eb49669b7f2db3f5ef3c8307d",
+      "Hash": "e25f18436e3efd42c7c590a1c4c15390",
       "Requirements": [
         "generics",
         "timechange"
@@ -473,19 +473,16 @@
     },
     "pool": {
       "Package": "pool",
-      "Version": "0.1.6.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteUsername": "rstudio",
-      "RemoteRepo": "pool",
-      "RemoteRef": "main",
-      "RemoteSha": "decb2a1531142529f00330c069ca93d98901baf8",
-      "RemoteHost": "api.github.com",
-      "Hash": "d4bb3fa8b0e2aa9049ca44255ad5a463",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "774056e668dd96014fbdd6ecfd9f6cb9",
       "Requirements": [
         "DBI",
         "R6",
-        "later"
+        "later",
+        "rlang",
+        "withr"
       ]
     },
     "promises": {

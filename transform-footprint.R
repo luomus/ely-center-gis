@@ -1,6 +1,6 @@
 #' @noRd
 #' @importFrom dplyr rowwise ungroup
-#' @importFrom sf st_as_sfc st_is_empty st_make_valid st_multipoint st_transform
+#' @importFrom sf st_as_sfc st_is_empty st_multipoint st_transform
 transform_footprint <- function(df) {
 
   footprint <- df[["footprint_wgs84"]]
@@ -13,21 +13,9 @@ transform_footprint <- function(df) {
 
   footprint <- sf::st_transform(footprint, crs = 3067L)
 
-  geoms <- geometry_type_chr(footprint)
+  footprint <- make_valid(footprint)
 
-  gc <- geoms == "GEOMETRYCOLLECTION"
-
-  uncollected <- lapply(footprint[gc], uncollect)
-
-  footprint[gc] <- sf::st_as_sfc(uncollected, crs = 3067L)
-
-  footprint <- lapply(footprint, sf::st_make_valid)
-
-  is_gc <- vapply(footprint, geometry_type_chr, "") == "GEOMETRYCOLLECTION"
-
-  is_gc <- which(is_gc)
-
-  message(paste(df[is_gc, "record_id"], collapse = " "), appendLF = FALSE)
+  geoms <- vapply(footprint, geometry_type_chr, "")
 
   footprint <- lapply(footprint, cast_to_multi)
 
@@ -67,7 +55,23 @@ transform_footprint <- function(df) {
 }
 
 #' @noRd
-#' @importFrom sf st_multilinestring st_multipoint st_multipolygon
+#' @importFrom sf sf::st_make_valid sf::st_as_sfc
+make_valid <- function(x) {
+
+  geoms <- vapply(x, geometry_type_chr, "")
+
+  gc <- geoms == "GEOMETRYCOLLECTION"
+
+  uncollected <- lapply(x[gc], uncollect)
+
+  x[gc] <- sf::st_as_sfc(uncollected, crs = 3067L)
+
+  lapply(x, sf::st_make_valid)
+
+}
+
+#' @noRd
+#' @importFrom sf st_make_valid st_multilinestring st_multipoint st_multipolygon
 uncollect <- function(x) {
 
   cgtypes <- vapply(x, geometry_type_chr, "")
@@ -95,6 +99,16 @@ uncollect <- function(x) {
   if (identical(geometry_type_chr(x), "MULTIPOLYGON")) {
 
     x[] <- lapply(x, lapply, round)
+
+    x <- sf::st_make_valid(x)
+
+    if (identical(geometry_type_chr(x), "GEOMETRYCOLLECTION")) {
+
+      x <- lapply(x, to_polygon)
+
+      x <- sf::st_multipolygon(x)
+
+    }
 
   }
 
