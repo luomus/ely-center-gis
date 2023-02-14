@@ -98,7 +98,7 @@ uncollect <- function(x) {
 
   if (identical(geometry_type_chr(x), "MULTIPOLYGON")) {
 
-    x[] <- lapply(x, lapply, round)
+    x[] <- lapply(x, lapply, round, 1L)
 
     x <- sf::st_make_valid(x)
 
@@ -140,7 +140,7 @@ to_polygon <- function(x) {
 
   if (geometry_type_chr(x) %in% geometries) {
 
-    x <- sf::st_buffer(x, 5L, 1L)
+    x <- sf::st_buffer(x, .5L, 1L)
 
   }
 
