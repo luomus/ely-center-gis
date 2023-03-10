@@ -106,7 +106,7 @@ uncollect <- function(x) {
 
       x <- lapply(x, to_polygon)
 
-      x <- do.call(x, c)
+      x <- do.call(c, x)
 
     }
 
