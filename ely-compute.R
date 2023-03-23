@@ -116,23 +116,29 @@ tryCatch(
 
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
 
-        system2(
-          'ogr2ogr',
-          args = c(
-            "-f",
-            "GPKG",
-            "ely.gpkg",
-            sprintf(
-              "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
-              Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
-              Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
-            ),
-            sprintf("'ely.%s'", geom),
-            if (file.exists("ely.gpkg")) "-update" else NULL,
-            "-nln",
-            geom
+        for (ely_center in ely_centers[["name"]]) {
+
+          system2(
+            'ogr2ogr',
+            args = c(
+              "-where",
+              sprintf("Vastuualue LIKE \"%s\"", ely_center),
+              "-f",
+              "GPKG",
+              "ely.gpkg",
+              sprintf(
+                "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
+                Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
+                Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
+              ),
+              sprintf("'%s.%s'", sub(" ELY-keskus", "", ely_center), geom),
+              if (file.exists("ely.gpkg")) "-update" else NULL,
+              "-nln",
+              geom
+            )
           )
-        )
+
+        }
 
         tbl_pirkanmaa <- DBI::Id(
           schema = "ely", table = paste0(geom, "_pirkanmaa")
