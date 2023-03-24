@@ -123,7 +123,7 @@ tryCatch(
             args = c(
               "-where",
               sprintf(
-                "\"\\\"%s.Vastuualue\\\" LIKE \\\"%s\\\"\"",
+                "\"\\\"ely.%s.Vastuualue\\\" LIKE \\\"%s\\\"\"",
                 geom,
                 ely_center
               ),
