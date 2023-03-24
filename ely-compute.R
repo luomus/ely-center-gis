@@ -122,11 +122,7 @@ tryCatch(
             'ogr2ogr',
             args = c(
               "-where",
-              sprintf(
-                "\"\\\"ely.%s.Vastuualue\\\" LIKE \\\"%s\\\"\"",
-                geom,
-                ely_center
-              ),
+              sprintf("\"\\\"Vastuualue\\\" LIKE \\\"%s\\\"\"", geom),
               "-f",
               "GPKG",
               "ely.gpkg",
