@@ -128,13 +128,14 @@ tryCatch(
               "ely.gpkg",
               sprintf(
                 "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
-                Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
-                Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
+                Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"),
+                Sys.getenv("PGUSER"), Sys.getenv("PGPASSWORD"),
+                Sys.getenv("PGPORT")
               ),
-              sprintf("'%s.%s'", sub(" ELY-keskus", "", ely_center), geom),
+              sprintf("'ely.%s'", geom),
               if (file.exists("ely.gpkg")) "-update" else NULL,
               "-nln",
-              geom
+              sprintf("%s_%s", sub(" ELY-keskus", "", ely_center), geom)
             )
           )
 
