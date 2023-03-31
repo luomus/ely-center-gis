@@ -117,6 +117,9 @@ tryCatch(
 
         for (ely_center in ely_centers[["name"]]) {
 
+          ely_layer_name <- sub("-keskus", "", ely_center)
+          ely_layer_name <- sub(" ", "_", ely_layer_name)
+
           system2(
             'ogr2ogr',
             args = c(
@@ -134,7 +137,7 @@ tryCatch(
               sprintf("'ely.%s'", geom),
               if (file.exists("ely.gpkg")) "-update" else NULL,
               "-nln",
-              sprintf("%s_%s", sub(" ELY-keskus", "", ely_center), geom)
+              sprintf("%s_%s", ely_layer_name, geom)
             )
           )
 
