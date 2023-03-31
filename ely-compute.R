@@ -19,7 +19,6 @@ tryCatch(
         setdiff("mod_time")
 
       unlink("ely.gpkg")
-      unlink("pirkanmaa.gpkg")
 
       for (geom in geoms) {
 
@@ -141,45 +140,11 @@ tryCatch(
 
         }
 
-        tbl_pirkanmaa <- DBI::Id(
-          schema = "ely", table = paste0(geom, "_pirkanmaa")
-        )
-
-        ely_pirkanmaa <- dplyr::filter(
-          ely, grepl("Pirkanmaan ELY-keskus", Vastuualue)
-        )
-
-        ely_pirkanmaa <- dplyr::compute(
-          ely_pirkanmaa, tbl_pirkanmaa, temporary = FALSE
-        )
-
         pool::dbRemoveTable(con, tbl)
-
-        system2(
-          'ogr2ogr',
-          args = c(
-            "-f",
-            "GPKG",
-            "pirkanmaa.gpkg",
-            sprintf(
-              "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
-              Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
-              Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
-            ),
-            sprintf("'ely.%s_pirkanmaa'", geom),
-            if (file.exists("pirkanmaa.gpkg")) "-update" else NULL,
-            "-nln",
-            geom
-          )
-        )
-
-        pool::dbRemoveTable(con, tbl_pirkanmaa)
 
       }
 
       zip("var/ely.zip", "ely.gpkg" , flags = "-rj9qX")
-
-      zip("var/pirkanmaa.zip", "pirkanmaa.gpkg" , flags = "-rj9qX")
 
     }
 
