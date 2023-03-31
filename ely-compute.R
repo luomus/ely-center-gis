@@ -19,7 +19,6 @@ tryCatch(
         setdiff("mod_time")
 
       unlink("ely.gpkg")
-      unlink("pirkanmaa.gpkg")
 
       for (geom in geoms) {
 
@@ -116,63 +115,39 @@ tryCatch(
 
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
 
-        system2(
-          'ogr2ogr',
-          args = c(
-            "-f",
-            "GPKG",
-            "ely.gpkg",
-            sprintf(
-              "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
-              Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
-              Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
-            ),
-            sprintf("'ely.%s'", geom),
-            if (file.exists("ely.gpkg")) "-update" else NULL,
-            "-nln",
-            geom
+        for (ely_center in ely_centers[["name"]]) {
+
+          ely_layer_name <- sub("-keskus", "", ely_center)
+          ely_layer_name <- sub(" ", "_", ely_layer_name)
+
+          system2(
+            'ogr2ogr',
+            args = c(
+              "-where",
+              sprintf("\"\\\"Vastuualue\\\" LIKE '%%%s%%'\"", ely_center),
+              "-f",
+              "GPKG",
+              "ely.gpkg",
+              sprintf(
+                "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
+                Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"),
+                Sys.getenv("PGUSER"), Sys.getenv("PGPASSWORD"),
+                Sys.getenv("PGPORT")
+              ),
+              sprintf("'ely.%s'", geom),
+              if (file.exists("ely.gpkg")) "-update" else NULL,
+              "-nln",
+              sprintf("%s_%s", ely_layer_name, geom)
+            )
           )
-        )
 
-        tbl_pirkanmaa <- DBI::Id(
-          schema = "ely", table = paste0(geom, "_pirkanmaa")
-        )
-
-        ely_pirkanmaa <- dplyr::filter(
-          ely, grepl("Pirkanmaan ELY-keskus", Vastuualue)
-        )
-
-        ely_pirkanmaa <- dplyr::compute(
-          ely_pirkanmaa, tbl_pirkanmaa, temporary = FALSE
-        )
+        }
 
         pool::dbRemoveTable(con, tbl)
-
-        system2(
-          'ogr2ogr',
-          args = c(
-            "-f",
-            "GPKG",
-            "pirkanmaa.gpkg",
-            sprintf(
-              "'PG:host=%s dbname=%s user=%s password=%s port=%s'",
-              Sys.getenv("PGHOST"), Sys.getenv("DB_NAME"), Sys.getenv("PGUSER"),
-              Sys.getenv("PGPASSWORD"), Sys.getenv("PGPORT")
-            ),
-            sprintf("'ely.%s_pirkanmaa'", geom),
-            if (file.exists("pirkanmaa.gpkg")) "-update" else NULL,
-            "-nln",
-            geom
-          )
-        )
-
-        pool::dbRemoveTable(con, tbl_pirkanmaa)
 
       }
 
       zip("var/ely.zip", "ely.gpkg" , flags = "-rj9qX")
-
-      zip("var/pirkanmaa.zip", "pirkanmaa.gpkg" , flags = "-rj9qX")
 
     }
 
