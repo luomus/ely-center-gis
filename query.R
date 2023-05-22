@@ -127,7 +127,7 @@ cols <- c(
   "date_end" = "Keruu_lopetus_pvm",
   "locality" = "Sijainti",
   "municipality" = "Kunta",
-  "bio_province_interpreted" = "Eliömaakunta",
+  "bio_province" = "Eliömaakunta",
   "coordinates_uncertainty" = "Paikan_tarkkuus_metreinä",
   "state_land" = "Valtion_maalla",
   "footprint_euref" = "ETRS_TM35FIN_WKT",
