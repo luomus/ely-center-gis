@@ -48,10 +48,16 @@ tryCatch(
           sprintf("INFO [%s] Subset %s updating...", Sys.time(), subset)
         )
 
+        slct <- unlist(select, use.names = FALSE)
+
+        names(slct) <- slct
+
+        slct[slct == "bio_province"] <- "bio_province_interpreted"
+
         data <-
           finbif::finbif_occurrence(
             filter = fltr,
-            select = unlist(select, use.names = FALSE),
+            select = slct,
             facts = unlist(facts, use.names = FALSE),
             n = "all",
             locale = "fi",
