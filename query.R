@@ -35,7 +35,7 @@ select <- list(
     "team",
     "municipality",
     "locality",
-    "bio_province_interpreted",
+    "bio_province",
     "formatted_date_time",
     "date_start",
     "date_end",
