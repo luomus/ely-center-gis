@@ -12,5 +12,11 @@ options(
   finbif_retry_pause_cap = 5e3
 )
 
+if (identical(getOption("finbif_api_url"), "https://apitest.laji.fi")) {
+
+  assignInNamespace("var_names", finbif:::var_names_test, "finbif")
+
+}
+
 ely_centers <- readRDS("ely-centers.rds")
 ely_centers <- sf::st_transform(ely_centers, 3067L)
