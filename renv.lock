@@ -304,14 +304,14 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.8.0.9006",
+      "Version": "0.9.0.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "f2a7691959d57cd74e9d9796c28eb2267de45a5c",
+      "RemoteSha": "b5169cdfaf273b5aa39251a1ef2c73659ce61e0b",
       "Requirements": [
         "R",
         "digest",
@@ -320,7 +320,7 @@
         "lutz",
         "utils"
       ],
-      "Hash": "9f9b2afcce65c6226c936f222979244a"
+      "Hash": "665ec7243040094adc56e6d07ea3f48a"
     },
     "generics": {
       "Package": "generics",
@@ -639,7 +639,7 @@
     },
     "sf": {
       "Package": "sf",
-      "Version": "1.0-12",
+      "Version": "1.0-13",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -658,7 +658,7 @@
         "units",
         "utils"
       ],
-      "Hash": "5b41b4f0bd22b38661d82205a87deb4b"
+      "Hash": "8fb4839843abc03528ff9f86424d6acd"
     },
     "sodium": {
       "Package": "sodium",
@@ -706,10 +706,10 @@
     },
     "sys": {
       "Package": "sys",
-      "Version": "3.4.1",
+      "Version": "3.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "34c16f1ef796057bfa06d3f4ff818a5d"
+      "Hash": "3a1be13d68d47a8cd0bfd74739ca1555"
     },
     "tibble": {
       "Package": "tibble",
