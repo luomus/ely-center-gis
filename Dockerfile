@@ -1,36 +1,6 @@
-FROM rocker/r-ver:4.2.1@sha256:84dbe29c3218221af453eca9bf95249d605920d9aa03598fcc96767242b7ea5e
+FROM ghcr.io/luomus/base-r-image@sha256:30d060ac692fd5914e3ef8c4acdaa84c930fa75320df1f301de93a140138b67c
 
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-      software-properties-common \
-      gpg-agent \
- && apt-get autoremove -y \
- && apt-get autoclean -y \
- && rm -rf /var/lib/apt/lists/*
-
-RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable \
- && apt-get update \
- && apt-get install -y --no-install-recommends \
-      gdal-bin \
-      libgdal-dev \
-      libgeos-dev \
-      libpq-dev \
-      libproj-dev \
-      libsodium-dev \
-      libudunits2-dev \
-      libz-dev \
- && apt-get autoremove -y \
- && apt-get autoclean -y \
- && rm -rf /var/lib/apt/lists/*
-
-ENV RENV_PATHS_LIBRARY renv/library
-
-COPY renv.lock renv.lock
-
-RUN R -e "install.packages('renv')" \
- && R -e "renv::restore()"
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY renv.lock /home/user/renv.lock
 COPY ely-centers.rds /home/user/ely-centers.rds
 COPY ely.R /home/user/ely.R
 COPY setup.R /home/user/setup.R
@@ -39,21 +9,11 @@ COPY query.R /home/user/query.R
 COPY transform-footprint.R /home/user/transform-footprint.R
 COPY ely-subsets.R /home/user/ely-subsets.R
 COPY ely-compute.R /home/user/ely-compute.R
-COPY init.R /home/user/init.R
 
-ENV  HOME /home/user
-ENV  OPENBLAS_NUM_THREADS 1
-
-WORKDIR /home/user
-
-RUN  mkdir -p /home/user/var \
+RUN  R -e "renv::restore()" \
+  && mkdir -p /home/user/var \
   && chgrp -R 0 /home/user \
   && chmod -R g=u /home/user /etc/passwd
 
-USER 1000
-
-EXPOSE 8000
-
-ENTRYPOINT ["entrypoint.sh"]
-
-CMD ["Rscript", "--vanilla", "init.R"]
+ENV STATUS_DIR="var/status"
+ENV LOG_DIR="var/logs"
