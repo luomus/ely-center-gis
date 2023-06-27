@@ -2,6 +2,7 @@ FROM ghcr.io/luomus/base-r-image@sha256:7b02c5e1679ea46fa44e1d8ad8a56551fff2f907
 
 COPY renv.lock /home/user/renv.lock
 COPY ely-centers.rds /home/user/ely-centers.rds
+COPY api.R /home/user/api.R
 COPY ely.R /home/user/ely.R
 COPY setup.R /home/user/setup.R
 COPY db-setup.R /home/user/db-setup.R
