@@ -1,5 +1,5 @@
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 parameters:
   - name: APP
     required: true
@@ -160,7 +160,7 @@ objects:
           - mountPath: ${DB_DIR}
             name: ${DB}-${BRANCH}
           ports:
-            - containerPort: ${DB_PORT}
+            - containerPort: ${{DB_PORT}}
           env:
           - name: MODE
             value: ${DB_RUN}
@@ -210,7 +210,7 @@ objects:
           - mountPath: ${VAR_PATH}
             name: ${APP}-${BRANCH}
           ports:
-          - containerPort: ${SVR_PORT}
+          - containerPort: ${{SVR_PORT}}
           env:
           - name: SVR_PORT
             value: ${SVR_PORT}
@@ -262,7 +262,7 @@ objects:
   spec:
     ports:
     - name: ${DB_PORT}
-      port: ${DB_PORT}
+      port: ${{DB_PORT}}
       targetPort: ${{DB_PORT}}
     selector:
       app: ${APP}
@@ -276,7 +276,7 @@ objects:
   spec:
     ports:
     - name: ${SVR_PORT}
-      port: ${SVR_PORT}
+      port: ${{SVR_PORT}}
       targetPort: ${{SVR_PORT}}
     selector:
       app: ${APP}
@@ -290,7 +290,7 @@ objects:
   spec:
     host: ${APP}-${SVR}-${BRANCH}.${HOST}
     port:
-      targetPort: ${SVR_PORT}
+      targetPort: ${{SVR_PORT}}
     tls:
       termination: edge
     to:
