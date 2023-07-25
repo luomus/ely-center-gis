@@ -75,12 +75,15 @@ parameters:
   - name: CRON
     required: true
     value: job
+  - name: CRON_IMAGE
+    required: true
+    value: docker.io/redhat/ubi8:8.8-854
   - name: CRON_SCHEDULE
     required: true
     value: "0 20 * * *"
   - name: CRON_CMD
     required: true
-    value: '["Rscript", "--vanilla", "ely.R"]'
+    value: '["curl", "$SVR_HOSTNAME/job?secret=$JOB_SECRET"]'
   - name: CRON_LIMIT
     required: true
     value: "7"
@@ -107,6 +110,10 @@ parameters:
     required: true
     generate: expression
     from: "[a-zA-Z0-9]{64}"
+  - name: JOB_SECRET
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{64}"
 metadata:
   name: ${APP}
 objects:
@@ -128,7 +135,7 @@ objects:
    name: ${APP}-${BRANCH}
   spec:
     accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
     persistentVolumeReclaimPolicy: Retain
     resources:
       requests:
@@ -238,6 +245,8 @@ objects:
     selector:
       app: ${APP}
       deploymentconfig: ${SVR}-${BRANCH}
+    strategy:
+      type: Recreate
     template:
       metadata:
         labels:
@@ -269,6 +278,32 @@ objects:
             value: ${SVR_PORT}
           - name: USER_ACCESS_TOKEN
             value: ${USER_ACCESS_TOKEN}
+          - name: PGHOST
+            value: ${DB}-${BRANCH}
+          - name: PGPORT
+            value: ${DB_PORT}
+          - name: PGUSER
+            value: ${DB_SUPER_USER}
+          - name: PGPASSWORD
+            value: ${DB_SUPER_PASSWORD}
+          - name: DB_NAME
+            value: ${DB_NAME}
+          - name: DB_USER
+            value: ${DB_USER}
+          - name: FINBIF_ACCESS_TOKEN
+            value: ${FINBIF_ACCESS_TOKEN}
+          - name: FINBIF_API_URL
+            value: ${FINBIF_API_URL}
+          - name: FINBIF_EMAIL
+            value: ${FINBIF_EMAIL}
+          - name: FINBIF_WAREHOUSE
+            value: ${FINBIF_WAREHOUSE}
+          - name: TIMEOUT_IN_HOURS
+            value: ${TIMEOUT_IN_HOURS}
+          - name: N_SUBSETS
+            value: ${N_SUBSETS}
+          - name: JOB_SECRET
+            value: ${JOB_SECRET}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
@@ -345,38 +380,12 @@ objects:
           spec:
             containers:
             - name: ${APP}-${BRANCH}-${CRON}
-              image: ${APP}-${BRANCH}:${TAG}
+              image: ${CRON_IMAGE}
               command: ${{CRON_CMD}}
-              volumeMounts:
-              - mountPath: ${VAR_PATH}
-                name: ${APP}-${BRANCH}
               env:
-              - name: PGHOST
-                value: ${DB}-${BRANCH}
-              - name: PGPORT
-                value: ${DB_PORT}
-              - name: PGUSER
-                value: ${DB_SUPER_USER}
-              - name: PGPASSWORD
-                value: ${DB_SUPER_PASSWORD}
-              - name: DB_NAME
-                value: ${DB_NAME}
-              - name: DB_USER
-                value: ${DB_USER}
-              - name: FINBIF_ACCESS_TOKEN
-                value: ${FINBIF_ACCESS_TOKEN}
-              - name: FINBIF_API_URL
-                value: ${FINBIF_API_URL}
-              - name: FINBIF_EMAIL
-                value: ${FINBIF_EMAIL}
-              - name: FINBIF_WAREHOUSE
-                value: ${FINBIF_WAREHOUSE}
-              - name: TIMEOUT_IN_HOURS
-                value: ${TIMEOUT_IN_HOURS}
-              - name: N_SUBSETS
-                value: ${N_SUBSETS}
-            volumes:
-            - name: ${APP}-${BRANCH}
-              persistentVolumeClaim:
-                claimName: ${APP}-${BRANCH}
+              - name: JOB_SECRET
+                value: ${JOB_SECRET}
+              env:
+              - name: $SVR_HOSTNAME
+                value: ${SVR}-${BRANCH}.${APP}.svc
             restartPolicy: Never
