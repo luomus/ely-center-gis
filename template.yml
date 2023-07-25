@@ -385,7 +385,6 @@ objects:
               env:
               - name: JOB_SECRET
                 value: ${JOB_SECRET}
-              env:
-              - name: $SVR_HOSTNAME
+              - name: SVR_HOSTNAME
                 value: ${SVR}-${BRANCH}.${APP}.svc
             restartPolicy: Never
