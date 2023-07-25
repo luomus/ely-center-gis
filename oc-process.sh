@@ -30,27 +30,27 @@ if [ "$BRANCH" != "main" ]; then
 
 fi
 
-if [ $i = "build" ]; then
+if [ $i = "volume-db" ]; then
 
   ITEM=".items[0]"
 
-elif [ $i = "image" ]; then
+elif [ $i = "volume-svr" ]; then
 
   ITEM=".items[1]"
 
-elif [ $i = "deploy-db" ]; then
+elif [ $i = "image" ]; then
 
   ITEM=".items[2]"
 
-elif [ $i = "deploy-svr" ]; then
+elif [ $i = "build" ]; then
 
   ITEM=".items[3]"
 
-elif [ $i = "volume-db" ]; then
+elif [ $i = "deploy-db" ]; then
 
   ITEM=".items[4]"
 
-elif [ $i = "volume-svr" ]; then
+elif [ $i = "deploy-svr" ]; then
 
   ITEM=".items[5]"
 

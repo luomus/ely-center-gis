@@ -102,6 +102,38 @@ parameters:
 metadata:
   name: ${APP}
 objects:
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${DB}-${BRANCH}
+  spec:
+    storageClassName: ${STORAGE_CLASS}
+    accessModes:
+    - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${STORAGE}
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${APP}-${BRANCH}
+  spec:
+    accessModes:
+    - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${SMALL_STORAGE}
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    lookupPolicy:
+      local: true
 - kind: BuildConfig
   apiVersion: v1
   metadata:
@@ -125,15 +157,6 @@ objects:
     - type: GitHub
       github:
         secret: ${GITHUB_SECRET}
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    lookupPolicy:
-      local: true
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -230,29 +253,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${APP}-${BRANCH}:${TAG}
-- kind: PersistentVolumeClaim
-  apiVersion: v1
-  metadata:
-   name: ${DB}-${BRANCH}
-  spec:
-    storageClassName: ${STORAGE_CLASS}
-    accessModes:
-    - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
-    resources:
-      requests:
-        storage: ${STORAGE}
-- kind: PersistentVolumeClaim
-  apiVersion: v1
-  metadata:
-   name: ${APP}-${BRANCH}
-  spec:
-    accessModes:
-    - ReadWriteMany
-    persistentVolumeReclaimPolicy: Retain
-    resources:
-      requests:
-        storage: ${SMALL_STORAGE}
 - kind: Service
   apiVersion: v1
   metadata:
