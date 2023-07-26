@@ -83,7 +83,7 @@ parameters:
     value: "0 20 * * *"
   - name: CRON_CMD
     required: true
-    value: '["curl", "$SVR_HOSTNAME/job?secret=$JOB_SECRET"]'
+    value: '["sh", "-c", "curl $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"]'
   - name: CRON_LIMIT
     required: true
     value: "7"
