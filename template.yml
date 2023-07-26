@@ -387,4 +387,6 @@ objects:
                 value: ${JOB_SECRET}
               - name: SVR_HOSTNAME
                 value: ${SVR}-${BRANCH}.${APP}.svc
+              - name: SVR_PORT
+                value: ${SVR_PORT}
             restartPolicy: Never
