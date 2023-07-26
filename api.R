@@ -6,7 +6,7 @@ function(req, res) {
     req[["argsQuery"]][["access_token"]], Sys.getenv("USER_ACCESS_TOKEN")
   )
 
-  status <- grepl("status|healthz", req[["PATH_INFO"]])
+  status <- grepl("logs|status|healthz", req[["PATH_INFO"]])
 
   secret <- identical(req[["argsQuery"]][["secret"]], Sys.getenv("JOB_SECRET"))
 
@@ -58,7 +58,9 @@ function() {
 
   sink(log_file, type = "message")
 
-  source("ely.R")
+  promises::future_promise(
+    source("ely.R")
+  )
 
   "success"
 
