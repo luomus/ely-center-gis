@@ -60,9 +60,7 @@ function() {
 
   sink(log_file, type = "message")
 
-  promises::future_promise(
-    source("ely.R")
-  )
+  promises::future_promise(source("ely.R"), seed = TRUE)
 
   "success"
 
