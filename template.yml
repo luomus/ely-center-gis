@@ -83,7 +83,11 @@ parameters:
     value: "0 20 * * *"
   - name: CRON_CMD
     required: true
-    value: '["sh", "-c", "curl $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"]'
+    value: '[
+      "sh",
+      "-c",
+      "curl --no-progress-meter $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"
+    ]'
   - name: CRON_LIMIT
     required: true
     value: "7"
