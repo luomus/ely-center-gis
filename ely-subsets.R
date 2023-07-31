@@ -14,7 +14,7 @@ tryCatch(
 
     last_subset <-
       mod_time_subsets |>
-      dplyr::slice_max(time, with_ties = FALSE) |>
+      dplyr::slice_max(time, with_ties = FALSE, na.rm = TRUE) |>
       dplyr::pull(subset)
 
     start <- 1L
