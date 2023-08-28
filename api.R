@@ -44,23 +44,12 @@ function() {
 #* @serializer unboxedJSON
 function() {
 
-  on.exit({
-
-    sink(type = "message")
-
-    sink()
-
-  })
-
-  log_file_name <- sprintf("var/logs/job-%s.txt", Sys.Date())
-
-  log_file <- file(log_file_name, open = "wt")
-
-  sink(log_file)
-
-  sink(log_file, type = "message")
-
-  promises::future_promise(source("ely.R"), seed = TRUE)
+  callr::r_bg(
+    source,
+    args = list(file = "ely.R"),
+    poll_connection = FALSE,
+    cleanup = FALSE
+  )
 
   "success"
 
