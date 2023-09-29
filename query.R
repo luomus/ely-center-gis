@@ -47,6 +47,7 @@ select <- list(
     "collection_id",
     "collection",
     "collection_quality",
+    "source",
     "data_source",
     "site_type",
     "site_status"
@@ -136,6 +137,7 @@ cols <- c(
   "document_id" = "Havaintoerän_tunniste",
   "collection_id" = "Aineiston_tunniste",
   "collection" = "Aineisto",
+  "source" = "Lähdejärjestelmä",
   "data_source" = "Aineistolähde",
   "collection_quality" = "Aineiston_laatu",
   "restriction_reason" = "Karkeistuksen_syy",
