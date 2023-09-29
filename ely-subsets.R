@@ -42,6 +42,12 @@ tryCatch(
       ) |>
       dplyr::pull(load_date)
 
+      if (isTRUE(Sys.getenv("TRIGGER") > last_mod_origin)) {
+
+        last_mod_origin <- Sys.getenv("TRIGGER")
+
+      }
+
       if (!isTRUE(last_mod_origin <= last_mod_subset)) {
 
         message(
