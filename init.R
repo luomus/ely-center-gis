@@ -47,18 +47,17 @@ p <- pr_filter(
   "auth",
   function(req, res) {
 
-    token <- identical(
-      req[["argsQuery"]][["access_token"]], Sys.getenv("USER_ACCESS_TOKEN")
+    ely_token <- identical(
+      req[["argsQuery"]][["access_token"]],
+      Sys.getenv("ELY_ACCESS_TOKEN")
     )
 
-    if (grepl("pirkanmaa", req[["PATH_INFO"]])) {
+    mh_token <- identical(
+      req[["argsQuery"]][["access_token"]],
+      Sys.getenv("MH_ACCESS_TOKEN")
+    )
 
-      token <- identical(
-        req[["argsQuery"]][["access_token"]],
-        Sys.getenv("PIRKANMAA_ACCESS_TOKEN")
-      )
-
-    }
+    token <- ely_token || mh_token
 
     status <- grepl("status|healthz", req[["PATH_INFO"]])
 
