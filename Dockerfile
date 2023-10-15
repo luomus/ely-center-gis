@@ -1,27 +1,4 @@
-FROM rocker/r-ver:4.2.1@sha256:84dbe29c3218221af453eca9bf95249d605920d9aa03598fcc96767242b7ea5e
-
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-      software-properties-common \
-      gpg-agent \
- && apt-get autoremove -y \
- && apt-get autoclean -y \
- && rm -rf /var/lib/apt/lists/*
-
-RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable \
- && apt-get update \
- && apt-get install -y --no-install-recommends \
-      gdal-bin \
-      libgdal-dev \
-      libgeos-dev \
-      libpq-dev \
-      libproj-dev \
-      libsodium-dev \
-      libudunits2-dev \
-      libz-dev \
- && apt-get autoremove -y \
- && apt-get autoclean -y \
- && rm -rf /var/lib/apt/lists/*
+FROM ghcr.io/luomus/base-r-image@sha256:db3ad26dc6edfdaed2611f87b948cb3ee9fd41cf9fab8dc701508f5c70906020
 
 ENV RENV_PATHS_LIBRARY renv/library
 
