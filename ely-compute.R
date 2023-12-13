@@ -113,6 +113,8 @@ tryCatch(
 
         tbl <- DBI::Id(schema = "ely", table = geom)
 
+        if (pool::dbExistsTable(con, tbl)) pool::dbRemoveTable(con, tbl)
+
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
 
         for (ely_center in ely_centers[["name"]]) {
