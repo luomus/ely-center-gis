@@ -14,7 +14,7 @@ tryCatch(
 
     last_subset <-
       mod_time_subsets |>
-      dplyr::slice_max(time, with_ties = FALSE) |>
+      dplyr::slice_max(time, with_ties = FALSE, na.rm = TRUE) |>
       dplyr::pull(subset)
 
     start <- 1L
@@ -41,6 +41,12 @@ tryCatch(
         n = 1L
       ) |>
       dplyr::pull(load_date)
+
+      if (isTRUE(Sys.getenv("TRIGGER") > last_mod_origin)) {
+
+        last_mod_origin <- Sys.getenv("TRIGGER")
+
+      }
 
       if (!isTRUE(last_mod_origin <= last_mod_subset)) {
 

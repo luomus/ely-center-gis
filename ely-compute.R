@@ -44,20 +44,20 @@ tryCatch(
             dplyr::across(
               dplyr::all_of(select[["sum"]]),
               ~ {
-                if (all(is.na(.x))) NA else sum(.x, na.rm = TRUE)
+                if (all(is.na(.x), na.rm = TRUE)) NA else sum(.x, na.rm = TRUE)
               }
             ),
             dplyr::across(
               dplyr::all_of(select[["max"]]),
               ~ {
-                if (all(is.na(.x))) NA else max(.x, na.rm = TRUE)
+                if (all(is.na(.x), na.rm = TRUE)) NA else max(.x, na.rm = TRUE)
               }
             ),
             dplyr::across(
               dplyr::all_of(c(select[["collapse"]], facts[["collapse"]])),
               ~ {
 
-                if (all(is.na(.x))) {
+                if (all(is.na(.x), na.rm = TRUE)) {
 
                   NA
 

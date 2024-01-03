@@ -1,7 +1,43 @@
-source("setup.R")
-source("db-setup.R")
-source("query.R")
-source("transform-footprint.R")
-source("ely-subsets.R")
-source("ely-compute.R")
+log_file_name <- sprintf("var/logs/update-%s.txt", Sys.Date())
+
+log_file <- file(log_file_name, open = "wt")
+
+sink(log_file)
+
+sink(log_file, type = "message")
+
+res <- tryCatch(
+  {
+
+    source("setup.R")
+    source("db-setup.R")
+    source("query.R")
+    source("transform-footprint.R")
+    source("ely-subsets.R")
+    source("ely-compute.R")
+
+    message(sprintf("INFO [%s] Job complete", Sys.time()))
+
+    "true"
+
+  },
+  error = function(e) {
+
+    message(sprintf("ERROR [%s] %s", Sys.time(), e$message))
+
+    "false"
+
+  }
+)
+
+cat(res, file = "var/status/success.txt")
+
+cat(format(Sys.time(), usetz = TRUE), file = "var/status/last-update.txt")
+
 pool::poolClose(con)
+
+sink(type = "message")
+
+sink()
+
+file.copy(log_file_name, "var/logs/update-latest.txt", TRUE)

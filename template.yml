@@ -1,5 +1,5 @@
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 parameters:
   - name: APP
     required: true
@@ -18,6 +18,14 @@ parameters:
   - name: DB
     required: true
     value: postgis
+  - name: DB_HEALTHCHECK
+    required: true
+    value: '[
+      "sh",
+      "-c",
+      "PGPASSWORD=$PG_PASSWORD
+        psql -h 0.0.0.0 -U $PG_USER -d $PG_DATABASE -c \"SELECT 1\""
+    ]'
   - name: DB_IMAGE
     required: true
     value: docker.io/crunchydata/crunchy-postgres-gis:centos8-13.6-3.1-4.7.5
@@ -67,12 +75,19 @@ parameters:
   - name: CRON
     required: true
     value: job
+  - name: CRON_IMAGE
+    required: true
+    value: docker.io/redhat/ubi8:8.8-854
   - name: CRON_SCHEDULE
     required: true
     value: "0 20 * * *"
   - name: CRON_CMD
     required: true
-    value: '["Rscript", "--vanilla", "ely.R"]'
+    value: '[
+      "sh",
+      "-c",
+      "curl --no-progress-meter $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"
+    ]'
   - name: CRON_LIMIT
     required: true
     value: "7"
@@ -99,9 +114,46 @@ parameters:
     required: true
     generate: expression
     from: "[a-zA-Z0-9]{64}"
+  - name: JOB_SECRET
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{64}"
 metadata:
   name: ${APP}
 objects:
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${DB}-${BRANCH}
+  spec:
+    storageClassName: ${STORAGE_CLASS}
+    accessModes:
+    - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${STORAGE}
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${APP}-${BRANCH}
+  spec:
+    storageClassName: ${STORAGE_CLASS}
+    accessModes:
+    - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${SMALL_STORAGE}
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    lookupPolicy:
+      local: true
 - kind: BuildConfig
   apiVersion: v1
   metadata:
@@ -125,15 +177,6 @@ objects:
     - type: GitHub
       github:
         secret: ${GITHUB_SECRET}
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    lookupPolicy:
-      local: true
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -160,7 +203,17 @@ objects:
           - mountPath: ${DB_DIR}
             name: ${DB}-${BRANCH}
           ports:
-            - containerPort: ${DB_PORT}
+            - containerPort: ${{DB_PORT}}
+          livenessProbe:
+            exec:
+              command: ${{DB_HEALTHCHECK}}
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              command: ${{DB_HEALTHCHECK}}
+            initialDelaySeconds: 5
+            periodSeconds: 5
           env:
           - name: MODE
             value: ${DB_RUN}
@@ -197,6 +250,8 @@ objects:
     selector:
       app: ${APP}
       deploymentconfig: ${SVR}-${BRANCH}
+    strategy:
+      type: Recreate
     template:
       metadata:
         labels:
@@ -210,12 +265,50 @@ objects:
           - mountPath: ${VAR_PATH}
             name: ${APP}-${BRANCH}
           ports:
-          - containerPort: ${SVR_PORT}
+          - containerPort: ${{SVR_PORT}}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: ${{SVR_PORT}}
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: ${{SVR_PORT}}
+            initialDelaySeconds: 5
+            periodSeconds: 5
           env:
           - name: SVR_PORT
             value: ${SVR_PORT}
           - name: USER_ACCESS_TOKEN
             value: ${USER_ACCESS_TOKEN}
+          - name: PGHOST
+            value: ${DB}-${BRANCH}
+          - name: PGPORT
+            value: ${DB_PORT}
+          - name: PGUSER
+            value: ${DB_SUPER_USER}
+          - name: PGPASSWORD
+            value: ${DB_SUPER_PASSWORD}
+          - name: DB_NAME
+            value: ${DB_NAME}
+          - name: DB_USER
+            value: ${DB_USER}
+          - name: FINBIF_ACCESS_TOKEN
+            value: ${FINBIF_ACCESS_TOKEN}
+          - name: FINBIF_API_URL
+            value: ${FINBIF_API_URL}
+          - name: FINBIF_EMAIL
+            value: ${FINBIF_EMAIL}
+          - name: FINBIF_WAREHOUSE
+            value: ${FINBIF_WAREHOUSE}
+          - name: TIMEOUT_IN_HOURS
+            value: ${TIMEOUT_IN_HOURS}
+          - name: N_SUBSETS
+            value: ${N_SUBSETS}
+          - name: JOB_SECRET
+            value: ${JOB_SECRET}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
@@ -230,29 +323,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${APP}-${BRANCH}:${TAG}
-- kind: PersistentVolumeClaim
-  apiVersion: v1
-  metadata:
-   name: ${DB}-${BRANCH}
-  spec:
-    storageClassName: ${STORAGE_CLASS}
-    accessModes:
-    - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
-    resources:
-      requests:
-        storage: ${STORAGE}
-- kind: PersistentVolumeClaim
-  apiVersion: v1
-  metadata:
-   name: ${APP}-${BRANCH}
-  spec:
-    accessModes:
-    - ReadWriteMany
-    persistentVolumeReclaimPolicy: Retain
-    resources:
-      requests:
-        storage: ${SMALL_STORAGE}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -262,7 +332,7 @@ objects:
   spec:
     ports:
     - name: ${DB_PORT}
-      port: ${DB_PORT}
+      port: ${{DB_PORT}}
       targetPort: ${{DB_PORT}}
     selector:
       app: ${APP}
@@ -276,7 +346,7 @@ objects:
   spec:
     ports:
     - name: ${SVR_PORT}
-      port: ${SVR_PORT}
+      port: ${{SVR_PORT}}
       targetPort: ${{SVR_PORT}}
     selector:
       app: ${APP}
@@ -290,7 +360,7 @@ objects:
   spec:
     host: ${APP}-${SVR}-${BRANCH}.${HOST}
     port:
-      targetPort: ${SVR_PORT}
+      targetPort: ${{SVR_PORT}}
     tls:
       termination: edge
     to:
@@ -315,38 +385,16 @@ objects:
           spec:
             containers:
             - name: ${APP}-${BRANCH}-${CRON}
-              image: ${APP}-${BRANCH}:${TAG}
+              image: ${CRON_IMAGE}
               command: ${{CRON_CMD}}
               volumeMounts:
               - mountPath: ${VAR_PATH}
                 name: ${APP}-${BRANCH}
               env:
-              - name: PGHOST
-                value: ${DB}-${BRANCH}
-              - name: PGPORT
-                value: ${DB_PORT}
-              - name: PGUSER
-                value: ${DB_SUPER_USER}
-              - name: PGPASSWORD
-                value: ${DB_SUPER_PASSWORD}
-              - name: DB_NAME
-                value: ${DB_NAME}
-              - name: DB_USER
-                value: ${DB_USER}
-              - name: FINBIF_ACCESS_TOKEN
-                value: ${FINBIF_ACCESS_TOKEN}
-              - name: FINBIF_API_URL
-                value: ${FINBIF_API_URL}
-              - name: FINBIF_EMAIL
-                value: ${FINBIF_EMAIL}
-              - name: FINBIF_WAREHOUSE
-                value: ${FINBIF_WAREHOUSE}
-              - name: TIMEOUT_IN_HOURS
-                value: ${TIMEOUT_IN_HOURS}
-              - name: N_SUBSETS
-                value: ${N_SUBSETS}
-            volumes:
-            - name: ${APP}-${BRANCH}
-              persistentVolumeClaim:
-                claimName: ${APP}-${BRANCH}
+              - name: JOB_SECRET
+                value: ${JOB_SECRET}
+              - name: SVR_HOSTNAME
+                value: ${SVR}-${BRANCH}.${APP}.svc
+              - name: SVR_PORT
+                value: ${SVR_PORT}
             restartPolicy: Never
