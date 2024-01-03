@@ -77,7 +77,7 @@ parameters:
     value: job
   - name: CRON_IMAGE
     required: true
-    value: docker.io/redhat/ubi8:8.8-854
+    value: docker.io/redhat/ubi9:9.3-1476
   - name: CRON_SCHEDULE
     required: true
     value: "0 20 * * *"
@@ -387,9 +387,6 @@ objects:
             - name: ${APP}-${BRANCH}-${CRON}
               image: ${CRON_IMAGE}
               command: ${{CRON_CMD}}
-              volumeMounts:
-              - mountPath: ${VAR_PATH}
-                name: ${APP}-${BRANCH}
               env:
               - name: JOB_SECRET
                 value: ${JOB_SECRET}
