@@ -86,7 +86,8 @@ parameters:
     value: '[
       "sh",
       "-c",
-      "curl --no-progress-meter $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"
+      "curl -s -w \"%{stderr}Code: %{response_code} URL: %{url_effective}\n\"
+         $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"
     ]'
   - name: CRON_LIMIT
     required: true
