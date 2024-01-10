@@ -3,7 +3,9 @@ tryCatch(
   {
 
     all_subsets <-
-      dplyr::tbl(con, DBI::Id(schema = "subsets", table = "mod_time")) |>
+      dplyr::tbl(
+        con, dbplyr::in_schema(schema = "subsets", table = "mod_time")
+      ) |>
       dplyr::summarise(n = dplyr::n()) |>
       dplyr::pull(n) |>
       as.character() |>
@@ -12,7 +14,7 @@ tryCatch(
     if (all_subsets) {
 
       geoms <-
-        pool::dbListObjects(con, DBI::Id(schema = "subsets")) |>
+        DBI::dbListObjects(con, dbplyr::in_schema(schema = "subsets")) |>
         getElement("table") |>
         lapply(methods::slot, "name") |>
         vapply(getElement, "", "table") |>
@@ -24,7 +26,7 @@ tryCatch(
 
         message(sprintf("INFO [%s] %s layer updating...", Sys.time(), geom))
 
-        tbl <- DBI::Id(schema = "subsets", table = geom)
+        tbl <- dbplyr::in_schema(schema = "subsets", table = geom)
 
         ely <-
           dplyr::tbl(con, tbl) |>
@@ -111,9 +113,9 @@ tryCatch(
           dplyr::rename_with(~cols, names(cols)) |>
           dplyr::arrange(.data[[!!cols[["date_start"]]]])
 
-        tbl <- DBI::Id(schema = "ely", table = geom)
+        tbl <- dbplyr::in_schema(schema = "ely", table = geom)
 
-        if (pool::dbExistsTable(con, tbl)) pool::dbRemoveTable(con, tbl)
+        if (DBI::dbExistsTable(con, tbl)) DBI::dbRemoveTable(con, tbl)
 
         ely <- dplyr::compute(ely, tbl, temporary = FALSE)
 
@@ -145,7 +147,7 @@ tryCatch(
 
         }
 
-        pool::dbRemoveTable(con, tbl)
+        DBI::dbRemoveTable(con, tbl)
 
       }
 

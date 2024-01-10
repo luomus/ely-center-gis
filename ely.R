@@ -34,7 +34,7 @@ cat(res, file = "var/status/success.txt")
 
 cat(format(Sys.time(), usetz = TRUE), file = "var/status/last-update.txt")
 
-pool::poolClose(con)
+DBI::dbDisconnect(con)
 
 sink(type = "message")
 

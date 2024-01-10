@@ -9,7 +9,7 @@ tryCatch(
     n_subsets <- as.integer(Sys.getenv("N_SUBSETS"))
 
     mod_time_subsets <- dplyr::tbl(
-      con, DBI::Id(schema = "subsets", table = "mod_time")
+      con, dbplyr::in_schema(schema = "subsets", table = "mod_time")
     )
 
     last_subset <-
@@ -100,11 +100,11 @@ tryCatch(
 
         for (geom in unique(geoms)) {
 
-          tbl <- DBI::Id(schema = "subsets", table = geom)
+          tbl <- dbplyr::in_schema(schema = "subsets", table = geom)
 
-          if (pool::dbExistsTable(con, tbl)) {
+          if (DBI::dbExistsTable(con, tbl)) {
 
-            pool::dbExecute(
+            DBI::dbExecute(
               con,
               sprintf(
                 "DELETE FROM \"subsets\".\"%s\" WHERE \"subset\" = %s",
@@ -118,7 +118,7 @@ tryCatch(
 
             sf::st_write(data[geoms == geom, ], con, tbl, append = FALSE)
 
-            pool::dbExecute(
+            DBI::dbExecute(
               con,
               sprintf(
                 "CREATE INDEX %1$s_subset_idx ON subsets.%1$s(subset)", geom
@@ -129,16 +129,16 @@ tryCatch(
 
         }
 
-        pool::dbExecute(
+        DBI::dbExecute(
           con,
           sprintf(
             "DELETE FROM \"subsets\".\"mod_time\" WHERE \"subset\" = %s", subset
           )
         )
 
-        pool::dbWriteTable(
+        DBI::dbWriteTable(
           con,
-          DBI::Id(schema = "subsets", table = "mod_time"),
+          dbplyr::in_schema(schema = "subsets", table = "mod_time"),
           data.frame(subset = subset, time = Sys.time()),
           append = TRUE
         )
