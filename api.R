@@ -14,13 +14,13 @@ function(req, res) {
 
   token <- ely_token || mh_token
 
-  status <- grepl("logs|status|healthz", req[["PATH_INFO"]])
+  allow <- grepl("logs|status|healthz|robots|favicon", req[["PATH_INFO"]])
 
   secret <- identical(req[["argsQuery"]][["secret"]], Sys.getenv("JOB_SECRET"))
 
   job <- secret && grepl("job", req[["PATH_INFO"]])
 
-  if (token || status || job) {
+  if (token || allow || job) {
 
     forward()
 
@@ -58,6 +58,22 @@ function() {
   )
 
   "success"
+
+}
+
+#* @get /favicon.ico
+#* @serializer contentType list(type="image/x-icon")
+function() {
+
+  readBin("favicon.ico", "raw", n = file.info("favicon.ico")$size)
+
+}
+
+#* @get /robots.txt
+#* @serializer contentType list(type="text/plain")
+function() {
+
+  readBin("robots.txt", "raw", n = file.info("robots.txt")$size)
 
 }
 
