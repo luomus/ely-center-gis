@@ -1,5 +1,3 @@
-library(future)
-
 #* Check if token is needed and present
 #* @filter token
 function(req, res) {
