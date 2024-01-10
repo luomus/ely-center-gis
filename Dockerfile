@@ -17,5 +17,6 @@ COPY query.R /home/user/query.R
 COPY transform-footprint.R /home/user/transform-footprint.R
 COPY ely-subsets.R /home/user/ely-subsets.R
 COPY ely-compute.R /home/user/ely-compute.R
+COPY favicon.ico /home/user/favicon.ico
 
 RUN permissions.sh
