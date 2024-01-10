@@ -51,7 +51,7 @@ tryCatch(
       if (!isTRUE(last_mod_origin <= last_mod_subset)) {
 
         message(
-          sprintf("INFO [%s] Subset %s updating...", Sys.time(), subset)
+          sprintf("INFO [%s] Subset %s updating...", format(Sys.time()), subset)
         )
 
         slct <- unlist(select, use.names = FALSE)
@@ -152,7 +152,9 @@ tryCatch(
       if (stop_timer[["toc"]] - start_timer > timeout_in_secs) {
 
         message(
-          sprintf("INFO [%s] Reached time limit. Job exiting", Sys.time())
+          sprintf(
+            "INFO [%s] Reached time limit. Job exiting", format(Sys.time())
+          )
         )
 
         break
@@ -161,14 +163,14 @@ tryCatch(
 
     }
 
-    message(sprintf("INFO [%s] Subsets job complete", Sys.time()))
+    message(sprintf("INFO [%s] Subsets job complete", format(Sys.time())))
 
     "true"
 
   },
   error = function(e) {
 
-    message(sprintf("ERROR [%s] %s", Sys.time(), e[["message"]]))
+    message(sprintf("ERROR [%s] %s", format(Sys.time()), e[["message"]]))
 
     "false"
 

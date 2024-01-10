@@ -16,14 +16,14 @@ res <- tryCatch(
     source("ely-subsets.R")
     source("ely-compute.R")
 
-    message(sprintf("INFO [%s] Job complete", Sys.time()))
+    message(sprintf("INFO [%s] Job complete", format(Sys.time())))
 
     "true"
 
   },
   error = function(e) {
 
-    message(sprintf("ERROR [%s] %s", Sys.time(), e$message))
+    message(sprintf("ERROR [%s] %s", format(Sys.time()), e$message))
 
     "false"
 

@@ -24,7 +24,9 @@ tryCatch(
 
       for (geom in geoms) {
 
-        message(sprintf("INFO [%s] %s layer updating...", Sys.time(), geom))
+        message(
+          sprintf("INFO [%s] %s layer updating...", format(Sys.time()), geom)
+        )
 
         tbl <- dbplyr::in_schema(schema = "subsets", table = geom)
 
@@ -155,14 +157,14 @@ tryCatch(
 
     }
 
-    message(sprintf("INFO [%s] Compute job complete", Sys.time()))
+    message(sprintf("INFO [%s] Compute job complete", format(Sys.time())))
 
     "true"
 
   },
   error = function(e) {
 
-    message(sprintf("ERROR [%s] %s", Sys.time(), e[["message"]]))
+    message(sprintf("ERROR [%s] %s", format(Sys.time()), e[["message"]]))
 
     "false"
 
