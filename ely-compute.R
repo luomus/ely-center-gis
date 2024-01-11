@@ -14,7 +14,7 @@ tryCatch(
     if (all_subsets) {
 
       geoms <-
-        DBI::dbListObjects(con, dbplyr::in_schema(schema = "subsets")) |>
+        DBI::dbListObjects(con, DBI::Id(schema = "subsets")) |>
         getElement("table") |>
         lapply(methods::slot, "name") |>
         vapply(getElement, "", "table") |>
