@@ -1,3 +1,5 @@
+dir.create("var/logs", showWarnings = FALSE)
+
 log_file_name <- sprintf("var/logs/update-%s.txt", Sys.Date())
 
 log_file <- file(log_file_name, open = "wt")
@@ -29,6 +31,8 @@ res <- tryCatch(
 
   }
 )
+
+dir.create("var/status", showWarnings = FALSE)
 
 cat(res, file = "var/status/success.txt")
 
