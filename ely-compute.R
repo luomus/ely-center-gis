@@ -28,10 +28,10 @@ tryCatch(
           sprintf("INFO [%s] %s layer updating...", format(Sys.time()), geom)
         )
 
-        tbl <- dbplyr::in_schema(schema = "subsets", table = geom)
+        tbl_subsets <- dbplyr::in_schema(schema = "subsets", table = geom)
 
         ely <-
-          dplyr::tbl(con, tbl) |>
+          dplyr::tbl(con, tbl_subsets) |>
           dplyr::group_by(
             taxon = ifelse(is.na(taxon_id), reported_name, taxon_id),
             dplyr::across(
@@ -115,11 +115,15 @@ tryCatch(
           dplyr::rename_with(~cols, names(cols)) |>
           dplyr::arrange(.data[[!!cols[["date_start"]]]])
 
-        tbl <- dbplyr::in_schema(schema = "ely", table = geom)
+        tbl_id <- DBI::Id(schema = "ely", table = geom)
 
-        if (DBI::dbExistsTable(con, tbl)) DBI::dbRemoveTable(con, tbl)
+        if (DBI::dbExistsTable(con, tbl_id)) DBI::dbRemoveTable(con, tbl_id)
 
-        ely <- dplyr::compute(ely, tbl, temporary = FALSE)
+        ely <- dplyr::compute(
+          ely,
+          dbplyr::in_schema(schema = "ely", table = geom),
+          temporary = FALSE
+        )
 
         for (ely_center in ely_centers[["name"]]) {
 
@@ -149,7 +153,7 @@ tryCatch(
 
         }
 
-        DBI::dbRemoveTable(con, tbl)
+        DBI::dbRemoveTable(con, tbl_id)
 
       }
 

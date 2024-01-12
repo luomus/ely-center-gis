@@ -100,7 +100,7 @@ tryCatch(
 
         for (geom in unique(geoms)) {
 
-          tbl <- dbplyr::in_schema(schema = "subsets", table = geom)
+          tbl <- DBI::Id(schema = "subsets", table = geom)
 
           if (DBI::dbExistsTable(con, tbl)) {
 

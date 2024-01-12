@@ -47,7 +47,7 @@ if (!is_db_setup) {
 
   DBI::dbWriteTable(
     con,
-    dbplyr::in_schema(schema = "subsets", table = "mod_time"),
+    DBI::Id(schema = "subsets", table = "mod_time"),
     data.frame(
       subset = integer(), time = as.POSIXct(numeric(), tz = Sys.timezone())
     )
