@@ -138,7 +138,7 @@ tryCatch(
 
         DBI::dbWriteTable(
           con,
-          dbplyr::in_schema(schema = "subsets", table = "mod_time"),
+          DBI::Id(schema = "subsets", table = "mod_time"),
           data.frame(subset = subset, time = Sys.time()),
           append = TRUE
         )
