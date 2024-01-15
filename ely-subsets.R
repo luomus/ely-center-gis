@@ -112,11 +112,15 @@ tryCatch(
               )
             )
 
-            sf::st_write(data[geoms == geom, ], con, tbl, append = TRUE)
+            sf::st_write(
+              data[geoms == geom, ], con, tbl, quiet = TRUE, append = TRUE
+            )
 
           } else {
 
-            sf::st_write(data[geoms == geom, ], con, tbl, append = FALSE)
+            sf::st_write(
+              data[geoms == geom, ], con, tbl, quiet = TRUE, append = FALSE
+            )
 
             DBI::dbExecute(
               con,
