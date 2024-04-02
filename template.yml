@@ -60,6 +60,14 @@ parameters:
   - name: SVR_PORT
     required: true
     value: "8000"
+  - name: SMTP_SERVER
+    required: true
+  - name: SMTP_PORT
+    required: true
+  - name: ERROR_EMAIL_TO
+    required: true
+  - name: ERROR_EMAIL_FROM
+    required: true
   - name: USER_ACCESS_TOKEN
     required: true
   - name: STORAGE
@@ -310,6 +318,16 @@ objects:
             value: ${N_SUBSETS}
           - name: JOB_SECRET
             value: ${JOB_SECRET}
+          - name: BRANCH
+            value: ${BRANCH}
+          - name: SMTP_SERVER
+            value: ${SMTP_SERVER}
+          - name: SMTP_PORT
+            value: ${SMTP_PORT}
+          - name: ERROR_EMAIL_TO
+            value: ${ERROR_EMAIL_TO}
+          - name: ERROR_EMAIL_FROM
+            value: ${ERROR_EMAIL_FROM}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
