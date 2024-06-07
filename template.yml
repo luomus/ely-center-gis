@@ -387,7 +387,7 @@ objects:
       name: ${SVR}-${BRANCH}
     wildcardPolicy: None
 - kind: CronJob
-  apiVersion: batch/v1beta1
+  apiVersion: batch/v1
   metadata:
     name: ${APP}-${BRANCH}
   spec:
