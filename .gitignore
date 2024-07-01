@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 .Renviron
+.env
 sandbox
