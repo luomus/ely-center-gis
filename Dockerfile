@@ -1,9 +1,5 @@
 # docker manifest inspect ghcr.io/luomus/base-r-image:main -v | jq '.Descriptor.digest'
-FROM ghcr.io/luomus/base-r-image@sha256:19a4ab18e6d63f9cf4051bfb7c1f770fbf3878ba4b32fa7d52ef885d9f53809b
-
-ENV FINBIF_USER_AGENT=https://github.com/luomus/ely-center-gis
-ENV STATUS_DIR="var/status"
-ENV LOG_DIR="var/logs"
+FROM ghcr.io/luomus/base-r-image@sha256:7d3d5924b227e786e237cc287c5b1c17b2832472abc750490e283bb26e4c5de8
 
 COPY renv.lock /home/user/renv.lock
 
