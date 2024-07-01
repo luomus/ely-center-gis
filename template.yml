@@ -6,9 +6,12 @@ parameters:
     value: ely-center-gis
   - name: BRANCH
     required: true
-  - name: GIT_HOST
+  - name: ACCESS_MODE
     required: true
-    value: https://github.com
+    value: ReadWriteOnce
+  - name: STORAGE_CLASS
+    required: true
+    value: standard-csi
   - name: ORG
     required: true
     value: luomus
@@ -26,14 +29,14 @@ parameters:
       "PGPASSWORD=$PG_PASSWORD
         psql -h 0.0.0.0 -U $PG_USER -d $PG_DATABASE -c \"SELECT 1\""
     ]'
-  - name: DB_IMAGE
-    required: true
-    value: docker.io/crunchydata/crunchy-postgres-gis:centos8-13.6-3.1-4.7.5
   - name: DB_NAME
     required: true
   - name: DB_PORT
     required: true
-  - name: DB_DIR
+  - name: DB_PATH
+    required: true
+    value:  /var/lib/postgresql/data
+  - name: DB_DATA
     required: true
     value: /pgdata
   - name: DB_RUN
@@ -75,17 +78,11 @@ parameters:
     value: "20Gi"
   - name: SMALL_STORAGE
     required: true
-  - name: STORAGE_CLASS
-    required: true
-    value: "standard-rwo"
   - name: HOST
     required: true
   - name: CRON
     required: true
     value: job
-  - name: CRON_IMAGE
-    required: true
-    value: docker.io/redhat/ubi9:9.3-1476
   - name: CRON_SCHEDULE
     required: true
     value: "0 20 * * *"
@@ -137,8 +134,7 @@ objects:
   spec:
     storageClassName: ${STORAGE_CLASS}
     accessModes:
-    - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
+    - ${ACCESS_MODE}
     resources:
       requests:
         storage: ${STORAGE}
@@ -149,8 +145,7 @@ objects:
   spec:
     storageClassName: ${STORAGE_CLASS}
     accessModes:
-    - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
+    - ${ACCESS_MODE}
     resources:
       requests:
         storage: ${SMALL_STORAGE}
@@ -177,7 +172,7 @@ objects:
     source:
       type: Git
       git:
-        uri: ${GIT_HOST}/${ORG}/${APP}.git
+        uri: https://github.com/luomus/${APP}.git
         ref: ${BRANCH}
     strategy:
       type: Docker
@@ -186,8 +181,8 @@ objects:
     - type: GitHub
       github:
         secret: ${GITHUB_SECRET}
-- kind: DeploymentConfig
-  apiVersion: v1
+- kind: Deployment
+  apiVersion: apps/v1
   metadata:
     name: ${DB}-${BRANCH}
     labels:
@@ -195,33 +190,39 @@ objects:
   spec:
     replicas: 1
     selector:
-      app: ${APP}
-      deploymentconfig: ${DB}-${BRANCH}
+      matchLabels:
+        app: ${APP}
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
           app: ${APP}
-          deploymentconfig: ${DB}-${BRANCH}
+          branch: ${BRANCH}
+          port: ${DB_PORT}
       spec:
         containers:
-        - image: ${DB_IMAGE}
+        # docker manifest inspect ghcr.io/luomus/postgis-image:main -v | jq '.Descriptor.digest'
+        - image: ghcr.io/luomus/postgis-image:main@sha256:78d54387d8a426856adbcd0ec2542cfdab2ab10def7e1373bbb0c95f410aeebd
           name: ${DB}-${BRANCH}
           volumeMounts:
-          - mountPath: ${DB_DIR}
+          - mountPath: ${DB_PATH}
             name: ${DB}-${BRANCH}
           ports:
             - containerPort: ${{DB_PORT}}
+          startupProbe:
+            exec:
+              command: ${{DB_HEALTHCHECK}}
+            periodSeconds: 5
+            failureThreshold: 10
           livenessProbe:
             exec:
               command: ${{DB_HEALTHCHECK}}
             failureThreshold: 5
             periodSeconds: 30
           readinessProbe:
-            httpGet:
+            exec:
               command: ${{DB_HEALTHCHECK}}
-            initialDelaySeconds: 5
             periodSeconds: 5
           env:
           - name: MODE
@@ -404,13 +405,14 @@ objects:
           spec:
             containers:
             - name: ${APP}-${BRANCH}-${CRON}
-              image: ${CRON_IMAGE}
+              # docker manifest inspect docker.io/redhat/ubi9:9.4 -v | jq '.[0].Descriptor.digest'
+              image: docker.io/redhat/ubi9:9.4@sha256:b8a991d0c5d0184d76196caf11ddc0605714c65f7a06ad23ad72e3d0a723eee1
               command: ${{CRON_CMD}}
               env:
               - name: JOB_SECRET
                 value: ${JOB_SECRET}
               - name: SVR_HOSTNAME
-                value: ${SVR}-${BRANCH}.${APP}.svc
+                value: ${SVR}-${BRANCH}.${APP}
               - name: SVR_PORT
                 value: ${SVR_PORT}
             restartPolicy: Never
