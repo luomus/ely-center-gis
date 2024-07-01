@@ -313,6 +313,12 @@ objects:
             value: ${FINBIF_EMAIL}
           - name: FINBIF_WAREHOUSE
             value: ${FINBIF_WAREHOUSE}
+          - name: FINBIF_USER_AGENT
+            value: https://github.com/luomus/${APP}.git
+          - name: STATUS_DIR
+            value: var/status
+          - name: LOG_DIR
+            value: var/logs
           - name: TIMEOUT_IN_HOURS
             value: ${TIMEOUT_IN_HOURS}
           - name: N_SUBSETS
