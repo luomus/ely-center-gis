@@ -10,39 +10,6 @@ is_db_setup <-
 
 if (!is_db_setup) {
 
-  DBI::dbExecute(con, "REVOKE ALL ON SCHEMA public FROM PUBLIC")
-
-  DBI::dbExecute(
-    con,
-    sprintf(
-      "REVOKE ALL PRIVILEGES ON DATABASE %s FROM %s",
-      Sys.getenv("DB_NAME"), Sys.getenv("DB_USER")
-    )
-  )
-
-  DBI::dbExecute(
-    con,
-    sprintf(
-      "GRANT USAGE ON SCHEMA %s TO %s",
-      Sys.getenv("DB_NAME"), Sys.getenv("DB_USER")
-    )
-  )
-
-  DBI::dbExecute(
-    con,
-    sprintf(
-      "GRANT USAGE ON SCHEMA public TO %s", Sys.getenv("DB_USER")
-    )
-  )
-
-  DBI::dbExecute(
-    con,
-    sprintf(
-      "ALTER DEFAULT PRIVILEGES IN SCHEMA %s GRANT SELECT ON TABLES TO %s",
-      Sys.getenv("DB_NAME"), Sys.getenv("DB_USER")
-    )
-  )
-
   DBI::dbExecute(con, "CREATE SCHEMA subsets")
 
   DBI::dbWriteTable(
