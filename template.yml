@@ -324,6 +324,10 @@ objects:
             value: ${FINBIF_EMAIL}
           - name: ERROR_EMAIL_FROM
             value: ${ERROR_EMAIL_FROM}
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "2Gi"
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
