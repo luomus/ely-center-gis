@@ -18,6 +18,17 @@ res <- tryCatch(
     source("ely-subsets.R")
     source("ely-compute.R")
 
+    system2(
+      "rclone",
+      c(
+        "sync",
+        "\"var\"",
+        sprintf(
+          "\"default:%s-%s\"", Sys.getenv("OBJECT_STORE"), Sys.getenv("BRANCH")
+        )
+      )
+    )
+
     message(sprintf("INFO [%s] Job complete", format(Sys.time())))
 
     "true"
