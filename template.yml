@@ -308,9 +308,9 @@ objects:
           - name: LOG_DIR
             value: var/logs
           - name: TIMEOUT_IN_HOURS
-            value: 8
+            value: "8"
           - name: N_SUBSETS
-            value: 244
+            value: "244"
           - name: JOB_SECRET
             valueFrom:
               secretKeyRef:
