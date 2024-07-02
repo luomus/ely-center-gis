@@ -12,97 +12,59 @@ parameters:
   - name: STORAGE_CLASS
     required: true
     value: standard-csi
-  - name: ORG
-    required: true
-    value: luomus
-  - name: TAG
-    required: true
-    value: latest
   - name: DB
     required: true
-    value: postgis
+    value: postgres
   - name: DB_HEALTHCHECK
     required: true
     value: '[
       "sh",
       "-c",
-      "PGPASSWORD=$PG_PASSWORD
-        psql -h 0.0.0.0 -U $PG_USER -d $PG_DATABASE -c \"SELECT 1\""
+      "PGPASSWORD=$POSTGRES_PASSWORD
+        psql -h 0.0.0.0 -U postgres -d postgres -c \"SELECT 1\""
     ]'
-  - name: DB_NAME
-    required: true
   - name: DB_PORT
     required: true
+    value: "5432"
   - name: DB_PATH
     required: true
-    value:  /var/lib/postgresql/data
+    value: /var/lib/postgresql/data
   - name: DB_DATA
     required: true
     value: /pgdata
-  - name: DB_RUN
+  - name: DB_PASSWORD
     required: true
-    value: postgres
-  - name: DB_MODE
-    required: true
-    value: primary
-  - name: DB_USER
-    required: true
-  - name: DB_PRIMARY_USER
-    required: true
-  - name: DB_SUPER_USER
-    required: true
-  - name: DB_USER_PASSWORD
-    required: true
-  - name: DB_PRIMARY_PASSWORD
-    required: true
-  - name: DB_SUPER_PASSWORD
-    required: true
-  - name: SVR
-    required: true
-    value: plumber
-  - name: SVR_PORT
+  - name: APP_PORT
     required: true
     value: "8000"
   - name: SMTP_SERVER
     required: true
   - name: SMTP_PORT
     required: true
-  - name: ERROR_EMAIL_TO
-    required: true
   - name: ERROR_EMAIL_FROM
     required: true
-  - name: USER_ACCESS_TOKEN
+  - name: ELY_ACCESS_TOKEN
+    required: true
+  - name: MH_ACCESS_TOKEN
     required: true
   - name: STORAGE
     required: true
-    value: "20Gi"
   - name: SMALL_STORAGE
     required: true
+  - name: HEALTH
+    required: true
+    value: /healthz
+  - name: LIVENESS_PERIOD
+    required: true
+    value: "30"
+  - name: FAILURE_THRESHOLD
+    required: true
+    value: "10"
+  - name: READINESS_PERIOD
+    required: true
+    value: "5"
   - name: HOST
     required: true
-  - name: CRON
-    required: true
-    value: job
-  - name: CRON_SCHEDULE
-    required: true
-    value: "0 20 * * *"
-  - name: CRON_CMD
-    required: true
-    value: '[
-      "sh",
-      "-c",
-      "curl -s -w \"%{stderr} Code: %{response_code} URL: %{url_effective}\n\"
-         $SVR_HOSTNAME:$SVR_PORT/job?secret=$JOB_SECRET"
-    ]'
-  - name: CRON_LIMIT
-    required: true
-    value: "7"
-  - name: CRON_CONCURRENCY
-    required: true
-    value: "Forbid"
-  - name: VAR_PATH
-    required: true
-    value: /home/user/var
   - name: FINBIF_ACCESS_TOKEN
     required: true
   - name: FINBIF_API_URL
@@ -111,19 +73,14 @@ parameters:
     required: true
   - name: FINBIF_WAREHOUSE
     required: true
-  - name: TIMEOUT_IN_HOURS
-    required: true
-    value: "8"
-  - name: N_SUBSETS
-    required: true
-  - name: GITHUB_SECRET
-    required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
   - name: JOB_SECRET
     required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
+  - name: RCLONE_ACCESS_KEY_ID
+    required: true
+  - name: RCLONE_SECRET_ACCESS_KEY
+    required: true
+  - name: OBJECT_STORE
+    required: true
 metadata:
   name: ${APP}
 objects:
@@ -149,38 +106,27 @@ objects:
     resources:
       requests:
         storage: ${SMALL_STORAGE}
-- kind: ImageStream
+- kind: ConfigMap
   apiVersion: v1
   metadata:
     name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    lookupPolicy:
-      local: true
-- kind: BuildConfig
+  data:
+    branch: ${BRANCH}
+    db_port: ${DB_PORT}
+    app_port: ${APP_PORT}
+- kind: Secret
   apiVersion: v1
   metadata:
     name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${APP}-${BRANCH}:${TAG}
-    source:
-      type: Git
-      git:
-        uri: https://github.com/luomus/${APP}.git
-        ref: ${BRANCH}
-    strategy:
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: GitHub
-      github:
-        secret: ${GITHUB_SECRET}
+  type: Opaque
+  data:
+    db_password: ${DB_PASSWORD}
+    ely_access_token: ${ELY_ACCESS_TOKEN}
+    mh_access_token: ${MH_ACCESS_TOKEN}
+    finbif_access_token: ${FINBIF_ACCESS_TOKEN}
+    rclone_access_key_id: ${RCLONE_ACCESS_KEY_ID}
+    rclone_secret_access_key: ${RCLONE_SECRET_ACCESS_KEY}
+    job_secret: ${JOB_SECRET}
 - kind: Deployment
   apiVersion: apps/v1
   metadata:
@@ -202,8 +148,8 @@ objects:
           port: ${DB_PORT}
       spec:
         containers:
-        # docker manifest inspect ghcr.io/luomus/postgis-image:main -v | jq '.Descriptor.digest'
-        - image: ghcr.io/luomus/postgis-image:main@sha256:78d54387d8a426856adbcd0ec2542cfdab2ab10def7e1373bbb0c95f410aeebd
+        - image: ghcr.io/luomus/postgis-image:main
+          imagePullPolicy: Always
           name: ${DB}-${BRANCH}
           volumeMounts:
           - mountPath: ${DB_PATH}
@@ -213,100 +159,142 @@ objects:
           startupProbe:
             exec:
               command: ${{DB_HEALTHCHECK}}
-            periodSeconds: 5
-            failureThreshold: 10
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           livenessProbe:
             exec:
               command: ${{DB_HEALTHCHECK}}
-            failureThreshold: 5
-            periodSeconds: 30
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           readinessProbe:
             exec:
               command: ${{DB_HEALTHCHECK}}
-            periodSeconds: 5
+            periodSeconds: ${{READINESS_PERIOD}}
           env:
-          - name: MODE
-            value: ${DB_RUN}
-          - name: PG_MODE
-            value: ${DB_MODE}
-          - name: PG_PRIMARY_PORT
-            value: ${DB_PORT}
-          - name: PG_DATABASE
-            value: ${DB_NAME}
-          - name: PG_USER
-            value: ${DB_USER}
-          - name: PG_PRIMARY_USER
-            value: ${DB_PRIMARY_USER}
-          - name: PG_PASSWORD
-            value: ${DB_USER_PASSWORD}
-          - name: PG_PRIMARY_PASSWORD
-            value: ${DB_PRIMARY_PASSWORD}
-          - name: PG_ROOT_PASSWORD
-            value: ${DB_SUPER_PASSWORD}
+          - name: PGDATA
+            value: ${DB_PATH}${DB_DATA}
+          - name: POSTGRES_DB
+            value: ${DB}
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_port
+          - name: POSTGRES_USER
+            value: ${DB}
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_password
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
         volumes:
         - name: ${DB}-${BRANCH}
           persistentVolumeClaim:
             claimName: ${DB}-${BRANCH}
-    triggers:
-    - type: ConfigChange
-- kind: DeploymentConfig
-  apiVersion: v1
+- kind: Deployment
+  apiVersion: apps/v1
   metadata:
-    name: ${SVR}-${BRANCH}
+    name: ${APP}-${BRANCH}
     labels:
       app: ${APP}
   spec:
     replicas: 1
     selector:
-      app: ${APP}
-      deploymentconfig: ${SVR}-${BRANCH}
+      matchLabels:
+        app: ${APP}
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
           app: ${APP}
-          deploymentconfig: ${SVR}-${BRANCH}
+          branch: ${BRANCH}
+          port: ${APP_PORT}
       spec:
         containers:
-        - image: ${APP}-${BRANCH}:${TAG}
-          name: ${SVR}-${BRANCH}
+        - image: ghcr.io/luomus/${APP}:${BRANCH}
+          imagePullPolicy: Always
+          name: ${APP}-${BRANCH}
           volumeMounts:
-          - mountPath: ${VAR_PATH}
+          - mountPath: /home/user/var
             name: ${APP}-${BRANCH}
           ports:
-          - containerPort: ${{SVR_PORT}}
+          - containerPort: ${{APP_PORT}}
+          startupProbe:
+            httpGet:
+              path: ${HEALTH}
+              port: ${{APP_PORT}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: ${{SVR_PORT}}
-            failureThreshold: 5
-            periodSeconds: 30
+              path: ${HEALTH}
+              port: ${{APP_PORT}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           readinessProbe:
             httpGet:
-              path: /healthz
-              port: ${{SVR_PORT}}
-            initialDelaySeconds: 5
-            periodSeconds: 5
+              path: ${HEALTH}
+              port: ${{APP_PORT}}
+            periodSeconds: ${{READINESS_PERIOD}}
           env:
-          - name: SVR_PORT
-            value: ${SVR_PORT}
-          - name: USER_ACCESS_TOKEN
-            value: ${USER_ACCESS_TOKEN}
+          - name: BRANCH
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: branch
+          - name: OBJECT_STORE
+            value: ${OBJECT_STORE}
+          - name: RCLONE_CONFIG_DEFAULT_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: rclone_access_key_id
+          - name: RCLONE_CONFIG_DEFAULT_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: rclone_secret_access_key
+          - name: APP_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: app_port
+          - name: ELY_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: ely_access_token
+          - name: MH_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: mh_access_token
           - name: PGHOST
             value: ${DB}-${BRANCH}
           - name: PGPORT
-            value: ${DB_PORT}
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_port
           - name: PGUSER
-            value: ${DB_SUPER_USER}
+            value: ${DB}
           - name: PGPASSWORD
-            value: ${DB_SUPER_PASSWORD}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_password
           - name: DB_NAME
-            value: ${DB_NAME}
-          - name: DB_USER
-            value: ${DB_USER}
+            value: ${DB}
           - name: FINBIF_ACCESS_TOKEN
-            value: ${FINBIF_ACCESS_TOKEN}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: finbif_access_token
           - name: FINBIF_API_URL
             value: ${FINBIF_API_URL}
           - name: FINBIF_EMAIL
@@ -320,35 +308,26 @@ objects:
           - name: LOG_DIR
             value: var/logs
           - name: TIMEOUT_IN_HOURS
-            value: ${TIMEOUT_IN_HOURS}
+            value: 8
           - name: N_SUBSETS
-            value: ${N_SUBSETS}
+            value: 244
           - name: JOB_SECRET
-            value: ${JOB_SECRET}
-          - name: BRANCH
-            value: ${BRANCH}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: job_secret
           - name: SMTP_SERVER
             value: ${SMTP_SERVER}
           - name: SMTP_PORT
             value: ${SMTP_PORT}
           - name: ERROR_EMAIL_TO
-            value: ${ERROR_EMAIL_TO}
+            value: ${FINBIF_EMAIL}
           - name: ERROR_EMAIL_FROM
             value: ${ERROR_EMAIL_FROM}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
             claimName: ${APP}-${BRANCH}
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - ${SVR}-${BRANCH}
-        from:
-          kind: ImageStreamTag
-          name: ${APP}-${BRANCH}:${TAG}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -362,46 +341,47 @@ objects:
       targetPort: ${{DB_PORT}}
     selector:
       app: ${APP}
-      deploymentconfig: ${DB}-${BRANCH}
+      branch: ${BRANCH}
+      port: ${DB_PORT}
 - kind: Service
   apiVersion: v1
   metadata:
-    name: ${SVR}-${BRANCH}
+    name: ${APP}-${BRANCH}
     labels:
       app: ${APP}
   spec:
     ports:
-    - name: ${SVR_PORT}
-      port: ${{SVR_PORT}}
-      targetPort: ${{SVR_PORT}}
+    - name: ${APP_PORT}
+      port: ${{APP_PORT}}
+      targetPort: ${{APP_PORT}}
     selector:
       app: ${APP}
-      deploymentconfig: ${SVR}-${BRANCH}
+      branch: ${BRANCH}
+      port: ${APP_PORT}
 - kind: Route
   apiVersion: v1
   metadata:
-    name: ${SVR}-${BRANCH}
+    name: ${APP}-${BRANCH}
     labels:
       app: ${APP}
   spec:
-    host: ${APP}-${SVR}-${BRANCH}.${HOST}
+    host: ${HOST}
     port:
-      targetPort: ${{SVR_PORT}}
+      targetPort: ${{APP_PORT}}
     tls:
-      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
     to:
       kind: Service
-      name: ${SVR}-${BRANCH}
-    wildcardPolicy: None
+      name: ${APP}-${BRANCH}
 - kind: CronJob
   apiVersion: batch/v1
   metadata:
     name: ${APP}-${BRANCH}
   spec:
-    schedule: ${CRON_SCHEDULE}
-    concurrencyPolicy: ${CRON_CONCURRENCY}
-    successfulJobsHistoryLimit: ${{CRON_LIMIT}}
-    failedJobsHistoryLimit: ${{CRON_LIMIT}}
+    schedule: "0 20 * * *"
+    concurrencyPolicy: Forbid
+    successfulJobsHistoryLimit: 7
+    failedJobsHistoryLimit: 7
     jobTemplate:
       spec:
         template:
@@ -410,15 +390,26 @@ objects:
               app: ${APP}
           spec:
             containers:
-            - name: ${APP}-${BRANCH}-${CRON}
+            - name: ${APP}-${BRANCH}
               # docker manifest inspect docker.io/redhat/ubi9:9.4 -v | jq '.[0].Descriptor.digest'
-              image: docker.io/redhat/ubi9:9.4@sha256:b8a991d0c5d0184d76196caf11ddc0605714c65f7a06ad23ad72e3d0a723eee1
-              command: ${{CRON_CMD}}
+              image: docker.io/redhat/ubi9:9.4@sha256:c532187e38fcf6849fae56decd0c58b5ef87b47bfaf24ad9e092cf4c9106f577
+              command:
+                - 'sh'
+                - '-c'
+                - >-
+                  curl -s -w '%{stderr} Code: %{response_code} URL: %{url_effective}\n'
+                  $APP_HOSTNAME:$APP_PORT/job?secret=$JOB_SECRET
               env:
               - name: JOB_SECRET
-                value: ${JOB_SECRET}
-              - name: SVR_HOSTNAME
-                value: ${SVR}-${BRANCH}.${APP}
-              - name: SVR_PORT
-                value: ${SVR_PORT}
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-${BRANCH}
+                    key: job_secret
+              - name: APP_HOSTNAME
+                value: ${APP}-${BRANCH}
+              - name: APP_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${APP}-${BRANCH}
+                    key: app_port
             restartPolicy: Never
