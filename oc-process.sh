@@ -87,14 +87,13 @@ else
 
 fi
 
-DB_USER=$(echo -n $DB_USER | base64)
 DB_PASSWORD=$(echo -n $DB_PASSWORD | base64)
 ELY_ACCESS_TOKEN=$(echo -n $ELY_ACCESS_TOKEN | base64)
 MH_ACCESS_TOKEN=$(echo -n $MH_ACCESS_TOKEN | base64)
 FINBIF_ACCESS_TOKEN=$(echo -n $FINBIF_ACCESS_TOKEN | base64)
 RCLONE_ACCESS_KEY_ID=$(echo -n $RCLONE_ACCESS_KEY_ID | base64)
 RCLONE_SECRET_ACCESS_KEY=$(echo -n $RCLONE_SECRET_ACCESS_KEY | base64)
-JOB_SECRET=$(echo -n $RCLONE_SECRET_ACCESS_KEY | base64)
+JOB_SECRET=$(echo -n $JOB_SECRET | base64)
 
 echo "# $(oc project ely-center-gis)"
 
