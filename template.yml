@@ -416,4 +416,8 @@ objects:
                   configMapKeyRef:
                     name: ${APP}-${BRANCH}
                     key: app_port
+              resources:
+                limits:
+                  cpu: "100m"
+                  memory: "100Mi"
             restartPolicy: Never
