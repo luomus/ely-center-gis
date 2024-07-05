@@ -34,6 +34,10 @@ parameters:
     value: /pgdata
   - name: DB_PASSWORD
     required: true
+  - name: MEMORY
+    required: true
+  - name: N_SUBSETS
+    required: true
   - name: APP_PORT
     required: true
     value: "8000"
@@ -310,7 +314,7 @@ objects:
           - name: TIMEOUT_IN_HOURS
             value: "8"
           - name: N_SUBSETS
-            value: "244"
+            value: ${N_SUBSETS}
           - name: JOB_SECRET
             valueFrom:
               secretKeyRef:
@@ -327,7 +331,7 @@ objects:
         resources:
           limits:
             cpu: "500m"
-            memory: "2Gi"
+            memory: ${MEMORY}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
