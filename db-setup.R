@@ -12,6 +12,8 @@ if (!is_db_setup) {
 
   DBI::dbExecute(con, "CREATE SCHEMA subsets")
 
+  DBI::dbExecute(con, "CREATE SCHEMA ely")
+
   DBI::dbWriteTable(
     con,
     DBI::Id(schema = "subsets", table = "mod_time"),
