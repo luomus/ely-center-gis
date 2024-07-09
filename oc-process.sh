@@ -117,5 +117,5 @@ oc process -f $f \
   -p RCLONE_SECRET_ACCESS_KEY="$RCLONE_SECRET_ACCESS_KEY" \
   -p JOB_SECRET="$JOB_SECRET" \
   -p MEMORY="$MEMORY" \
-  -p N_SUBSETS="$N_SUBSETS"
+  -p N_SUBSETS="$N_SUBSETS" \
   | jq $ITEM
