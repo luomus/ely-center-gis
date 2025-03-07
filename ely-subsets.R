@@ -64,6 +64,7 @@ tryCatch(
           finbif::finbif_occurrence(
             filter = fltr,
             select = slct,
+            order_by = "record_id",
             facts = unlist(facts, use.names = FALSE),
             n = "all",
             locale = "fi",
