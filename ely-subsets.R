@@ -59,6 +59,7 @@ tryCatch(
         names(slct) <- slct
 
         slct[slct == "bio_province"] <- "bio_province_interpreted"
+        slct[slct == "municipality"] <- "finnish_municipality"
 
         data <-
           finbif::finbif_occurrence(
