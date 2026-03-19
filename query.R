@@ -89,7 +89,7 @@ facts <- list(
   ),
   collapse = c(
     "Vesistöalue",
-    "Merialueen tunniste"
+    "Kartoituskerran yksilöivä ID"
   )
 )
 
@@ -152,7 +152,7 @@ cols <- c(
   "Peittävyysprosentti" = "Peittävyysprosentti",
   "Havainnon määrän yksikkö" = "Havainnon_määrän_yksikkö",
   "Vesistöalue" = "Vesistöalue",
-  "Merialueen tunniste" = "Merialueen_tunniste",
+  "Kartoituskerran yksilöivä ID" = "Kartoituskerran yksilöivä ID",
   "ely_center" = "Vastuualue",
   "geom" = "geom"
 )
