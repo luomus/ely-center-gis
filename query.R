@@ -152,7 +152,7 @@ cols <- c(
   "Peittävyysprosentti" = "Peittävyysprosentti",
   "Havainnon määrän yksikkö" = "Havainnon_määrän_yksikkö",
   "Vesistöalue" = "Vesistöalue",
-  "Kartoituskerran yksilöivä ID" = "Kartoituskerran yksilöivä ID",
+  "Kartoituskerran yksilöivä ID" = "Kartoituskerran_yksilöivä_ID",
   "ely_center" = "Vastuualue",
   "geom" = "geom"
 )
