@@ -11,7 +11,8 @@ options(
   finbif_hide_progress = TRUE,
   finbif_retry_times = 10,
   finbif_retry_pause_base = 2,
-  finbif_retry_pause_cap = 5e3
+  finbif_retry_pause_cap = 5e3,
+  finbif_use_dwc = FALSE
 )
 
 ely_centers <- readRDS("ely-centers.rds")
